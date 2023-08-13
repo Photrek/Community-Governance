@@ -1,0 +1,223 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Community contribution scores</title>
+    <link rel="icon" href="{% static 'swae_portal/favicon.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'swae_portal/style.css' %}">
+</head>
+<body>
+    <h1>Community contribution scores</h1>
+
+
+    {% if step >= 1 %}
+        <h2>Step 1: Upload data</h2>
+
+        {% if step < 2 %}
+        <p>Please provide a data export from the Swae portal in form of a zip file.</p>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div style="display: flex; align-items: center;">
+                <label for="zip-file-select-button" id="zip-file-select-label" class="btn">
+                    Select file
+                </label>
+                {{ upload_form.select_button }}
+                {{ upload_form.upload_button }}
+            </div>
+        </form>
+        {% endif %}
+
+        {% if upload_error_message %}
+            <p class="error">{{ upload_error_message }}</p>
+        {% endif %}
+    {% endif %}
+
+
+    {% if step >= 2 %}
+        <h2>Step 2: Select missions</h2>
+
+        {% if step < 3 %}
+        <p>Please select all missions that shall be used in the calculations.</p>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="inputs-div">
+                <div class="inputs-div-label">Missions</div>
+                <div class="inputs-div-content">
+                {% for field in filter_form.visible_fields %}
+                    {% if field.name != 'filter_button' %}
+                    <div class="form-row"">
+                        <div class="form-check">
+                            {{ field }}
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-check">
+                    {{ filter_form.filter_button }}
+                </div>
+            </div>
+        </form>
+        {% endif %}
+
+        {% if filter_error_message %}
+            <p class="error">{{ filter_error_message }}</p>
+        {% endif %}
+    {% endif %}
+
+
+    {% if step >= 3 %}
+        <h2>Step 3: Calculate scores</h2>
+
+        {% if step < 4 %}
+        <p>Please set the variables that influence the calculation of contribution scores.</p>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% for group in calculate_scores_form.field_groups %}
+                <div class="inputs-div">
+                    <div class="inputs-div-label">{{ group.text }}</div>
+                    <div class="inputs-div-content">
+                    {% for field_name in group.fields %}
+                        {% for field in calculate_scores_form.visible_fields %}
+                            {% if field.name == field_name %}
+                            <div class="form-row"">
+                                <div class="form-check">
+                                    {{ field }}
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="form-row">
+                <div class="form-check">
+                    {{ calculate_scores_form.calculate_scores_button }}
+                </div>
+            </div>
+        </form>
+        {% endif %}
+
+        {% if calculate_scores_error_message %}
+            <p class="error">{{ calculate_scores_error_message }}</p>
+        {% endif %}
+    {% endif %}
+
+
+    {% if step >= 4 %}
+        <h2>Step 4: Calculate rewards</h2>
+
+        {% if step < 5 %}
+        <p>Please set the variables that influence the calculation of user rewards.</p>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% for group in calculate_rewards_form.field_groups %}
+                <div class="inputs-div">
+                    <div class="inputs-div-label">{{ group.text }}</div>
+                    <div class="inputs-div-content">
+                    {% for field_name in group.fields %}
+                        {% for field in calculate_rewards_form.visible_fields %}
+                            {% if field.name == field_name %}
+                            <div class="form-row"">
+                                <div class="form-check">
+                                    {{ field }}
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="form-row">
+                <div class="form-check">
+                    {{ calculate_rewards_form.calculate_rewards_button }}
+                </div>
+            </div>
+        </form>
+        {% endif %}
+
+        {% if calculate_rewards_error_message %}
+            <p class="error">{{ calculate_rewards_error_message }}</p>
+        {% endif %}
+    {% endif %}
+
+
+    {% if step >= 5 %}
+        <h2>Step 5: Download results</h2>
+        <p>The calculations resulted in following files.</p>
+
+        <div class="outputs-div">
+            <div class="grid-container">
+                {% if state.zip_filename %}
+                    <label for="link-zip" class="grid-label">Original zip file:</label>
+                    <a href="/download/{{ state.zip_filename }}" id="link-zip">{{ state.zip_filename }}</a>
+                {% endif %}
+
+                {% if state.sqlite_filename %}
+                    <label for="link-sqlite" class="grid-label">SQLite database:</label>
+                    <a href="/download/{{ state.sqlite_filename }}" id="link-sqlite">{{ state.sqlite_filename }}</a>
+                {% endif %}
+
+                {% if state.excel_filename %}
+                    <label for="link-excel" class="grid-label">Excel spreadsheet:</label>
+                    <a href="/download/{{ state.excel_filename }}" id="link-excel">{{ state.excel_filename }}</a>
+                {% endif %}
+
+                {% if state.fig_scores_filename %}
+                    <label for="link-fig-scores" class="grid-label">Contribution scores figure:</label>
+                    <a href="/download/{{ state.fig_scores_filename }}" id="link-fig-scores">{{ state.fig_scores_filename }}</a>
+                {% endif %}
+
+                {% if state.fig_agix_filename %}
+                    <label for="link-fig-agix" class="grid-label">AGIX rewards figure:</label>
+                    <a href="/download/{{ state.fig_agix_filename }}" id="link-fig-agix">{{ state.fig_agix_filename }}</a>
+                {% endif %}
+
+                {% if state.fig_vw_filename %}
+                    <label for="link-fig-vp" class="grid-label">Voting weights figure:</label>
+                    <a href="/download/{{ state.fig_vw_filename }}" id="link-fig-vp">{{ state.fig_vw_filename }}</a>
+                {% endif %}
+
+                {% if state.report_filename %}
+                    <label for="link-report" class="grid-label">Report:</label>
+                    <a href="/download/{{ state.report_filename }}" id="link-report">{{ state.report_filename }}</a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if state.results_filepath %}
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <a href="/download/{{ state.results_filename }}" class="btn btn-primary">Download all</a>
+            </form>
+        {% endif %}
+    {% endif %}
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            selectButton = document.getElementById('zip-file-select-button');
+            const uploadButton = document.getElementById('zip-file-upload-button');
+
+            selectButton.addEventListener('change', function() {
+                const fileName = selectButton.files[0].name;
+                uploadButton.style.display = 'block';
+                uploadButton.value = "Upload " + fileName;
+            });
+        } catch (error) {}
+    });
+</script>
+
+</html>

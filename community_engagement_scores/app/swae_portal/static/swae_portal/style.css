@@ -1,0 +1,193 @@
+html {
+     background-color: black;
+}
+
+body {
+    margin: 5% 15%;
+    padding: 0;
+    color: #dedce3;
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    letter-spacing: -0.1px;
+    font-synthesis: none;
+    -moz-font-feature-settings: "kern";
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-transform: capitalize;
+    margin-top: 0;
+    margin-bottom: .5rem;
+    margin-left: -1.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    background: linear-gradient(225deg, #32c5ff 0%, #b620e0 52%, #f7b500 95%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+h1, h2, h3, h4 {
+    font-family: "Inter", sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    line-height: 60px;
+}
+
+h2 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: normal;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+p {
+    color: #dedce3;
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    letter-spacing: -0.1px;
+    line-height: 28px;
+}
+
+.error:before {
+    content: 'Error: ';
+    color: red;
+}
+
+.btn {
+    display: inline-block;
+    padding: 18px 32px 18px 32px;
+    border-radius: 3px;
+    border: none;
+    outline: none;
+    background: -webkit-gradient( linear, left top, left bottom, from(#fdbf14), color-stop(50%, #fd9542), color-stop(0%, #fd9542) );
+    background: linear-gradient(180deg, #fdbf14 0%, #fd9542 50%, #fd9542 0%);
+    color: #010004;
+    background-size: 1px 120px;
+    font-family: "Inter", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.09px;
+    line-height: 21px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    -webkit-transition: background 0.2s ease-out;
+    transition: background 0.2s ease-out;
+}
+.btn:hover {
+    background-position: 120px;
+    color: #fff;
+}
+
+.outputs-div {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #b620e0;
+}
+.inputs-div {
+    width: 100%;
+    margin-bottom: 15px;
+    padding-top: 5px;
+    padding-left: 12px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #b620e0;
+}
+.inputs-div-label {
+    color: #b620e0;
+    font-size: 16px;
+    letter-spacing: -0.1px;
+    line-height: 28px;
+}
+.inputs-div-content {
+    margin-top: 3px;
+    margin-bottom: 8px;
+    max-height: 15em;
+    overflow-y: scroll;
+
+    /* Firefox */
+    scrollbar-color: #b620e0 black;
+    /* Chrome, Edge, Safari */
+    &::-webkit-scrollbar {
+      width: 7px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #b620e0;
+      border-radius: 5px;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: black;
+    }
+}
+
+#zip-file-select-button {
+    display: none;
+}
+#zip-file-select-label {
+    margin-right: 30px;
+}
+#zip-file-upload-button {
+    display: none;
+    margin-right: 10px;
+}
+
+.form-check label,
+.form-check input[type="checkbox"] {
+    cursor: pointer !important;
+}
+
+input[type="number"],
+input[type="text"] {
+    width: 75px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-right: 4px;
+    padding: 1px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-width: 0px;
+    border-radius: 5px;
+    background-color: #dedce3;
+    text-align: center;
+    outline: none;
+    box-shadow: none;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button,
+input[type="text"]::-webkit-inner-spin-button,
+input[type="text"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"]:focus,
+input[type="number"]:hover,
+input[type="text"]:focus,
+input[type="text"]:hover {
+    background-color: #fdbf14;
+}
+
+a {
+    color: #fdbf14;
+    text-decoration: none;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: min-content min-content;
+    grid-gap: 10px;
+}
+.grid-item {
+    display: inline-block;
+}
+.grid-label {
+    white-space: nowrap;
+}
