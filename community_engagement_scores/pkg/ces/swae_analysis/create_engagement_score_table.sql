@@ -1,5 +1,5 @@
 -- Calculate points for user activities, depending on given variables
-CREATE TABLE {table_name_contribution_scores} AS
+CREATE TABLE {table_name_engagement_scores} AS
 SELECT
     user_id,
 
@@ -41,12 +41,12 @@ SELECT
     NULL AS pts_total_reactions_received,
     NULL AS pts_for_activities,
     NULL AS pts_for_ratings_received,
-    NULL AS contribution_score
+    NULL AS engagement_score
 FROM {table_name_counts}
 LEFT JOIN users USING (user_id);
 
 
-UPDATE {table_name_contribution_scores}
+UPDATE {table_name_engagement_scores}
 SET pts_total_reactions_created = pts_upvote_reactions_created
     + pts_downvote_reactions_created
     + pts_anger_reactions_created
@@ -74,7 +74,7 @@ SET pts_total_reactions_created = pts_upvote_reactions_created
     + pts_sad_reactions_received;
 
 
-UPDATE {table_name_contribution_scores}
+UPDATE {table_name_engagement_scores}
 SET pts_for_activities = pts_proposals_created
     + pts_ratings_created
     + pts_ratings_received
@@ -86,19 +86,19 @@ SET pts_for_activities = pts_proposals_created
     pts_for_ratings_received = (
         SELECT weight_received_ratings
         FROM {table_name_counts}
-        WHERE {table_name_contribution_scores}.user_id={table_name_counts}.user_id
+        WHERE {table_name_engagement_scores}.user_id={table_name_counts}.user_id
     );
 
 
--- Scale the points received for proposal ratings, so they become a user-specified fraction of the total points (=contribution score)
-UPDATE {table_name_contribution_scores}
+-- Scale the points received for proposal ratings, so they become a user-specified fraction of the total points (=engagement_score)
+UPDATE {table_name_engagement_scores}
 SET pts_for_ratings_received = pts_for_ratings_received * (
     SELECT
-        {fraction_of_contribution_scores_for_highly_rated_proposals} / (1.0 - {fraction_of_contribution_scores_for_highly_rated_proposals}) *
+        {fraction_of_engagement_scores_for_highly_rated_proposals} / (1.0 - {fraction_of_engagement_scores_for_highly_rated_proposals}) *
         SUM(pts_for_activities) / SUM(pts_for_ratings_received)
-    FROM {table_name_contribution_scores}
+    FROM {table_name_engagement_scores}
 );
 
 
-UPDATE {table_name_contribution_scores}
-SET contribution_score = pts_for_activities + pts_for_ratings_received;
+UPDATE {table_name_engagement_scores}
+SET engagement_score = pts_for_activities + pts_for_ratings_received;

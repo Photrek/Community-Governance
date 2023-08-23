@@ -1,3 +1,5 @@
+"""Module for basic shared functionality."""
+
 import sqlite3
 from typing import List, Tuple
 
@@ -8,13 +10,13 @@ def execute_query(con: sqlite3.Connection, query: str) -> List[Tuple]:
     Parameters
     ----------
     con : sqlite3.Connection
-        The connection object to the SQLite database.
+        The SQLite database connection object.
     query : str
         The SQL query to execute.
 
     Returns
     -------
-    List[Tuple]
+    result : List[Tuple]
         A list of tuples representing the result of the query.
 
     """
@@ -29,8 +31,8 @@ def execute_script(con: sqlite3.Connection, script: str) -> None:
 
     Parameters
     ----------
-    conn : sqlite3.Connection
-        The connection object to the SQLite database.
+    con : sqlite3.Connection
+        The SQLite database connection object.
     script : str
         The SQL script to execute.
 

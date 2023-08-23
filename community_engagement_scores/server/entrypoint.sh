@@ -11,14 +11,14 @@
 python manage.py migrate --no-input
 
 # collect static files
-python manage.py collectstatic --noinput
+python manage.py collectstatic --no-input
 
 
 
 # 2. gunicorn server
 
 # run it as a daemon process (background)
-gunicorn contrib_scores.wsgi:application --bind "127.0.0.1:8000" --daemon
+gunicorn ces_project.wsgi:application --bind "127.0.0.1:8000" --daemon
 
 
 

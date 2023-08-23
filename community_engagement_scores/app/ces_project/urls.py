@@ -1,5 +1,5 @@
 """
-URL configuration for contrib_scores project.
+URL configuration for ces_project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.urls import include, path
 
+
 urlpatterns = [
-    path('', include('swae_portal.urls', namespace='swae_portal')),
+    path("", include("swae_portal.urls", namespace="swae_portal")),
 ]

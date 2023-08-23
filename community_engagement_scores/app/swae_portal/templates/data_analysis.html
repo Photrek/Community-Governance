@@ -3,12 +3,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Community contribution scores</title>
+    <title>Community engagement scores</title>
     <link rel="icon" href="{% static 'swae_portal/favicon.png' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'swae_portal/style.css' %}">
 </head>
 <body>
-    <h1>Community contribution scores</h1>
+    <h1>Community engagement scores</h1>
 
 
     {% if step >= 1 %}
@@ -75,7 +75,7 @@
         <h2>Step 3: Calculate scores</h2>
 
         {% if step < 4 %}
-        <p>Please set the variables that influence the calculation of contribution scores.</p>
+        <p>Please set the variables that influence the calculation of engagement scores.</p>
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
@@ -175,7 +175,7 @@
                 {% endif %}
 
                 {% if state.fig_scores_filename %}
-                    <label for="link-fig-scores" class="grid-label">Contribution scores figure:</label>
+                    <label for="link-fig-scores" class="grid-label">Engagement scores figure:</label>
                     <a href="/download/{{ state.fig_scores_filename }}" id="link-fig-scores">{{ state.fig_scores_filename }}</a>
                 {% endif %}
 

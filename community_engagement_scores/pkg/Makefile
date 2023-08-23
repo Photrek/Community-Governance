@@ -23,8 +23,8 @@
 #   - tox: https://tox.readthedocs.io
 
 
-PKG_NAME := ccs
-PKG_ABBREVIATION := ccs
+PKG_NAME := ces
+PKG_ABBREVIATION := ces
 
 PKG_DIR := $(PKG_NAME)
 EXAMPLES_DIR := examples
@@ -57,8 +57,7 @@ help:
 	@echo "    make style-isort   style check with isort (check import order)"
 	@echo "    make style-flake8  style check with flake8 (check basic code conventions, detect bugs)"
 	@echo "    make style-pydoc   style check with pydocstyle (check docstring conventions)"
-	@echo "    make test-unit     run unit and integration tests with pytest"
-	@echo "    make test-system   run system tests in virtual environments with tox"
+	@echo "    make test          run automatic tests with pytest"
 	@echo "    make todo          check for TODO comments in source code with pylint"
 	@echo "    make urls          check if all URLs in code lead to a server response"
 	@echo
@@ -114,6 +113,7 @@ clean:
 	# Directories
 	-@rm -rf tests/out* tests/htmlcov tests/.coverage*
 	-@rm -rf tests/*.csv
+	-@rm -rf examples/output
 	-@rm -rf build dist
 	-@find . -type d \
 	    \( \
@@ -151,17 +151,11 @@ style-flake8:
 style-pydoc:
 	pydocstyle --convention=numpy $(PKG_DIR)
 
-.PHONY: test-unit
-test-unit:
+.PHONY: test
+test:
 	@cd tests; \
 	rm -rf output htmlcov .coverage*; \
-	pytest --timeout=300 --cov=$(PKG_NAME) --cov-report html
-
-.PHONY: test-system
-test-system:
-	tox --recreate --result-json tox_results.json
-	@echo
-	@echo "Results of system test with tox can be found in tox_results.json"
+	pytest --cov=$(PKG_NAME) --cov-report html
 
 .PHONY: todo
 todo:

@@ -13,6 +13,7 @@ RUN apt update \
 && apt install -y gcc nginx \
 && pip install --upgrade pip \
 && pip install -r /project/app/requirements.txt \
+&& pip install -r /project/pkg/requirements.txt \
 && pip install /project/pkg \
 && pip cache purge \
 && apt purge -y gcc \

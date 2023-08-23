@@ -504,6 +504,9 @@ SET num_received_sad_reactions = received_sad_reactions.num_received_sad_reactio
 FROM received_sad_reactions
 WHERE filter{filter_id}_counts.user_id = received_sad_reactions.user_id;
 
+DROP TABLE reactions_grouped;
+DROP TABLE selected_comments_x_reactions;
+DROP TABLE selected_comments_x_reactions_grouped;
 
 
 DELETE FROM filter{filter_id}_counts

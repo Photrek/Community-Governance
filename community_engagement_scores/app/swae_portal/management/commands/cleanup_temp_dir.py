@@ -1,18 +1,22 @@
 import os
 import shutil
 from datetime import datetime, timedelta
+
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from django.conf import settings
 
 
 class Command(BaseCommand):
-    help = 'Deletes expired sessions and temporary directories based on settings.SESSION_COOKIE_AGE.'
+    help = (
+        "Deletes expired sessions and temporary directories based on "
+        "settings.SESSION_COOKIE_AGE."
+    )
 
     def handle(self, *args, **options):
         # Call Django's built-in clearsessions command to delete database entries
-        call_command('clearsessions')
-        self.stdout.write(self.style.SUCCESS(f'Called "python manage.py clearsessions"'))
+        call_command("clearsessions")
+        self.stdout.write(self.style.SUCCESS('Called "python manage.py clearsessions"'))
 
         # Delete temporary folders
         default_expiry = 2 * 60 * 60
@@ -24,11 +28,13 @@ class Command(BaseCommand):
         except Exception:
             expiry_seconds = default_expiry
 
-        for root, dirs, files in os.walk(temp_directory_path):
+        for root, dirs, _ in os.walk(temp_directory_path):
             for dir_name in dirs:
                 dir_path = os.path.join(root, dir_name)
                 dir_creation_time = datetime.fromtimestamp(os.path.getctime(dir_path))
                 dt = current_time - dir_creation_time
                 if dt > timedelta(seconds=expiry_seconds):
                     shutil.rmtree(dir_path)
-                    self.stdout.write(self.style.SUCCESS(f'Deleted temporary directory: {dir_path}'))
+                    self.stdout.write(
+                        self.style.SUCCESS(f"Deleted temporary directory: {dir_path}")
+                    )

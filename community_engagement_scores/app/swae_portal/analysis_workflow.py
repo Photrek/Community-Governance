@@ -3,8 +3,7 @@ import os
 import sqlite3
 import zipfile
 
-from ccs import swae_analysis as swa
-
+from ces import swae_analysis as swa
 from django.conf import settings
 
 
@@ -19,7 +18,7 @@ class Workflow:
 
         # Convert
         filepath = os.path.join(dirpath, filename)
-        with open(filepath, 'wb+') as f:
+        with open(filepath, "wb+") as f:
             for chunk in file_obj.chunks():
                 f.write(chunk)
 
@@ -33,7 +32,7 @@ class Workflow:
         dirpath = self.state.dirpath
 
         # Convert
-        sqlite_filename = "ccs.sqlite"
+        sqlite_filename = "ces.sqlite"
         sqlite_filepath = os.path.join(dirpath, sqlite_filename)
         con = swa.zip_to_sqlite(zip_filepath, sqlite_filepath)
         con.close()
@@ -49,7 +48,7 @@ class Workflow:
         dirpath = self.state.dirpath
 
         # Convert
-        excel_filename = "ccs.xlsx"
+        excel_filename = "ces.xlsx"
         excel_filepath = os.path.join(dirpath, excel_filename)
         con = sqlite3.connect(sqlite_filepath)
         swa.sqlite_to_excel(con, excel_filepath)
@@ -63,11 +62,13 @@ class Workflow:
         # Get
         sqlite_filepath = self.state.sqlite_filepath
         filter_id = self.state.filter_id
-        filter_id = 1 if filter_id is None else filter_id+1
+        filter_id = 1 if filter_id is None else filter_id + 1
 
         # Convert
         con = sqlite3.connect(sqlite_filepath)
-        swa.create_filter_views(con, filter_id, selected_mission_ids, extra_time_in_days=100)
+        swa.create_filter_views(
+            con, filter_id, selected_mission_ids, extra_time_in_days=100
+        )
         con.close()
 
         # Set
@@ -78,7 +79,7 @@ class Workflow:
         sqlite_filepath = self.state.sqlite_filepath
         filter_id = self.state.filter_id
         variables_id = self.state.variables_id
-        variables_id = 1 if variables_id is None else variables_id+1
+        variables_id = 1 if variables_id is None else variables_id + 1
 
         # Convert
         con = sqlite3.connect(sqlite_filepath)
@@ -86,7 +87,7 @@ class Workflow:
             con,
             filter_id,
         )
-        swa.create_contribution_score_table(
+        swa.create_engagement_score_table(
             con,
             filter_id,
             variables_id,
@@ -98,14 +99,22 @@ class Workflow:
         self.state.score_variables = variables
         self.state.variables_id = variables_id
 
-    def calculate_rewards(self, filtered_user_ids, function_agix_reward, function_voting_weight, threshold_percentile,
-                          total_agix_reward, min_voting_weight, max_voting_weight):
+    def calculate_rewards(
+        self,
+        filtered_user_ids,
+        function_agix_reward,
+        function_voting_weight,
+        threshold_percentile,
+        total_agix_reward,
+        min_voting_weight,
+        max_voting_weight,
+    ):
         # Get
         sqlite_filepath = self.state.sqlite_filepath
         filter_id = self.state.filter_id
         variables_id = self.state.variables_id
         distribution_id = self.state.distribution_id
-        distribution_id = 1 if distribution_id is None else distribution_id+1
+        distribution_id = 1 if distribution_id is None else distribution_id + 1
 
         # Convert
         con = sqlite3.connect(sqlite_filepath)
@@ -144,8 +153,8 @@ class Workflow:
         variables_id = self.state.variables_id
         distribution_id = self.state.distribution_id
 
-        file_format = 'png'
-        filename_scores = f"contribution_scores.{file_format}"
+        file_format = "png"
+        filename_scores = f"engagement_scores.{file_format}"
         filename_agix = f"agix_rewards.{file_format}"
         filename_vw = f"voting_weights.{file_format}"
 
@@ -154,7 +163,9 @@ class Workflow:
         filepath_agix = os.path.join(dirpath, filename_agix)
         filepath_vw = os.path.join(dirpath, filename_vw)
         con = sqlite3.connect(sqlite_filepath)
-        fig1, fig2, fig3 = swa.visualize_rewards(con, filter_id, variables_id, distribution_id)
+        fig1, fig2, fig3 = swa.plot_rewards(
+            con, filter_id, variables_id, distribution_id
+        )
         fig1.savefig(filepath_scores, format=file_format)
         fig2.savefig(filepath_agix, format=file_format)
         fig3.savefig(filepath_vw, format=file_format)
@@ -186,14 +197,18 @@ class Workflow:
         vw_base64 = image_to_base64(filepath_vw)
 
         def clean_attribute(s):
-            return ' '.join([x.capitalize() for x in s.split('_')])
+            return " ".join([x.capitalize() for x in s.split("_")])
 
         def to_table(data, skip_zero=False):
-            header = '<tr><th>Variable</th><th>Value</th></tr>'
-            content = '\n'.join([f'<tr><td>{clean_attribute(key)}</td><td>{val}</td></tr>'
-                                 for key, val in data.items()
-                                 if (not skip_zero or val != 0)])
-            return '<table>' + header + content + '</table>'
+            header = "<tr><th>Variable</th><th>Value</th></tr>"
+            content = "\n".join(
+                [
+                    f"<tr><td>{clean_attribute(key)}</td><td>{val}</td></tr>"
+                    for key, val in data.items()
+                    if (not skip_zero or val != 0)
+                ]
+            )
+            return "<table>" + header + content + "</table>"
 
         score_variables_html = to_table(score_variables, skip_zero=True)
         reward_variables_html = to_table(reward_variables)
@@ -274,14 +289,14 @@ class Workflow:
 
         html_text = f"""<html>
 <head>
-    <title>Report of community contribution score calculation</title>
+    <title>Report of community engagement score calculation</title>
     <style>{css_text}    </style>
 </head>
 <body>
     <h1>Figures</h1>
-    <h2>Contribution scores</h2>
+    <h2>Engagement scores</h2>
     <div class="image-container">
-        <img src="data:image/png;base64,{scores_base64}" alt="Contribution scores Image">
+        <img src="data:image/png;base64,{scores_base64}" alt="Engagement scores Image">
     </div>
     <h2>Reward distribution</h2>
     <div class="image-container">
@@ -291,7 +306,7 @@ class Workflow:
         <img src="data:image/png;base64,{vw_base64}" alt="Voting weights image">
     </div>
     <h1>Settings</h1>
-    <h2>Contribution scores</h2>
+    <h2>Engagement scores</h2>
     {score_variables_html}
     <h2>Reward distribution</h2>
     {reward_variables_html}
@@ -323,7 +338,7 @@ class Workflow:
         # Convert
         filename = "results.zip"
         filepath = os.path.join(dirpath, filename)
-        with zipfile.ZipFile(filepath, 'w') as f:
+        with zipfile.ZipFile(filepath, "w") as f:
             for filepath in filepaths:
                 f.write(filepath, os.path.basename(filepath))
 
@@ -331,26 +346,26 @@ class Workflow:
         self.state.results_filename = filename
         self.state.results_filepath = filepath
 
-    def get_mission_information(self):
+    def get_missions(self):
         # Get
         sqlite_filepath = self.state.sqlite_filepath
 
         # Convert
         con = sqlite3.connect(sqlite_filepath)
-        all_missions = swa.get_mission_information(con)
+        all_missions = swa.get_missions(con)
         con.close()
 
         # Return
         return all_missions
 
-    def get_user_information(self):
+    def get_users(self):
         # Get
         sqlite_filepath = self.state.sqlite_filepath
         filter_id = self.state.filter_id
 
         # Convert
         con = sqlite3.connect(sqlite_filepath)
-        user_information = swa.get_user_information(con, filter_id=filter_id)
+        user_information = swa.get_users(con, filter_id=filter_id)
         con.close()
 
         # Return

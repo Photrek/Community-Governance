@@ -2,21 +2,6 @@
 # -*- coding: utf-8 -*-
 #
 # Setup script for configuring, packaging, distributing and installing this Python package.
-#
-# Package information
-# - Name:    ccs
-# - Author:  Robert Haas
-# - Email:   robert.haas@protonmail.com
-# - License: See LICENSE in the package root directory
-# - Copyright notice: See NOTICE in the package root directory
-#
-# References for best practices in creating Python packages
-# - Python Packaging User Guide (PyPUG): https://packaging.python.org
-# - Python Packaging Authority (PyPA):   https://www.pypa.io
-# - Python Package Index (PyPI):         https://pypi.org
-# - Setuptools:                          https://setuptools.readthedocs.io
-# - PEP 440 about versioning:            https://www.python.org/dev/peps/pep-0440
-# - Semantic Versioning (SemVer):        https://semver.org
 
 import re
 from codecs import open
@@ -45,12 +30,12 @@ def read_file(filepath):
 
 
 def load_long_description(pkg_dir):
-    """Load long description from file README.rst"""
+    """Load long description from file README.md"""
     try:
-        filepath_readme = path.join(pkg_dir, "README.rst")
+        filepath_readme = path.join(pkg_dir, "README.md")
         return read_file(filepath_readme)
     except Exception:
-        message = "Long description could not be read from README.rst"
+        message = "Long description could not be read from README.md"
         raise ValueError(message)
 
 
@@ -90,23 +75,21 @@ def load_version(pkg_dir, pkg_name):
     return version_string
 
 
-PKG_NAME = "ccs"
+PKG_NAME = "ces"
 PKG_DIR = locate_package_directory()
 
 setup(
     # Basic package information
     name=PKG_NAME,
     version=load_version(PKG_DIR, PKG_NAME),
-    author="Robert Haas",
-    author_email="robert.haas@protonmail.com",
-    description=("Community Contribution Scores (CCS)."),
+    description=("Community Engagement Scores (CES)"),
     long_description=load_long_description(PKG_DIR),
-    url="https://github.com/robert-haas/ccs",
-    license="Apache License, Version 2.0",
     # Classifiers: available ones listed at https://pypi.org/classifiers
     classifiers=[
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
+        "Development Status :: 5 - Production/Stable",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     ],
     # Included files
     # a) auto-detected Python packages
@@ -114,16 +97,17 @@ setup(
     # b) data files that are specified in the MANIFEST.in file
     include_package_data=True,
     # Dependencies that need to be fulfilled
-    python_requires=">=3.6",
+    python_requires=">=3.11",
     setup_requires=[
         "setuptools>=40",
     ],
     # Dependencies that are downloaded by pip on installation
     install_requires=[
         "setuptools>=40",
+        "gravis>=0.1",
         "matplotlib>=3",
         "networkx>=3",
-        "gravis>=0.1",
+        "numpy>=1.25",
         "pandas>=2",
         "pyexcelerate>=0.10",
     ],
