@@ -84,9 +84,9 @@ install-edit:
 .PHONY: install-dev
 install-dev:
 	# Linting
-	pip install black isort flake8 flake8-bugbear pydocstyle
+	pip install black isort flake8 flake8-bugbear pydocstyle pylint
 	# Testing
-	pip install pytest pytest-cov
+	pip install pytest pytest-cov scipy
 	# Package in editable form
 	pip install -e .
 

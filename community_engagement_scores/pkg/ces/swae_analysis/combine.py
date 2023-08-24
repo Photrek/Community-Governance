@@ -13,6 +13,7 @@ from .extract import extract_swae_data
 from .load import load_sqlite
 from .retrieve import get_engagement_scores, get_missions, get_rewards
 from .transform import transform_swae_data
+from .visualize import plot_rewards
 
 
 FILTER_ID = 0
@@ -61,8 +62,8 @@ def sqlite_to_scores_and_rewards(
     mission_ids: List[str] = None,
     variables: Dict = None,
     filtered_user_ids: List[str] = None,
-    function_agix_reward: callable = None,
-    function_voting_weight: callable = None,
+    function_agix_reward: callable = "x",
+    function_voting_weight: callable = "x",
     inline: bool = False,
 ) -> List[Tuple]:
     """Calculate community engagement scores based on provided SQLite data.
@@ -80,12 +81,10 @@ def sqlite_to_scores_and_rewards(
     filtered_user_ids : List[str], optional
         A list of user IDs to filter for reward calculation.
         If None, no filtering will be applied.
-    function_agix_reward : callable, optional
+    function_agix_reward : callable, optional, default="x"
         A custom function to calculate AGIX rewards for users.
-        If None, the default AGIX reward calculation will be used.
-    function_voting_weight : callable, optional
+    function_voting_weight : callable, optional, default="x"
         A custom function to calculate voting weight for users.
-        If None, the default voting weight calculation will be used.
     inline : bool, optional, default=False
         Flag to specify whether to display generated plots inline.
 
@@ -142,11 +141,13 @@ def sqlite_to_scores_and_rewards(
     VARIABLES_ID += 1
     DISTRIBUTION_ID += 1
 
-    # Counts
+    # Data selection
     create_filter_views(con, FILTER_ID, mission_ids)
+
+    # Activity counts
     create_counts_table(con, FILTER_ID)
 
-    # Scores
+    # Engagement scores
     create_engagement_score_table(con, FILTER_ID, VARIABLES_ID, variables)
 
     # Rewards
@@ -163,5 +164,6 @@ def sqlite_to_scores_and_rewards(
 
     # Retrieve data to return
     engagement_scores = get_engagement_scores(con, FILTER_ID, VARIABLES_ID)
-    rewards = get_rewards(con, FILTER_ID, VARIABLES_ID)
-    return engagement_scores, rewards
+    rewards = get_rewards(con, FILTER_ID, VARIABLES_ID, DISTRIBUTION_ID)
+    figures = plot_rewards(con, FILTER_ID, VARIABLES_ID, DISTRIBUTION_ID, inline)
+    return engagement_scores, rewards, figures

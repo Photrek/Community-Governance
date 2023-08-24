@@ -98,6 +98,19 @@ def test_all_database_calculations_and_corresponding_file_exports(tmpdir):
     con.close()
 
 
+def test_combined(tmpdir):
+    zip_filepath = os.path.join(os.path.dirname(__file__), "input", "raw.zip")
+    sqlite_filepath = os.path.join(tmpdir, "db.sqlite")
+
+    con = swa.zip_to_sqlite(zip_filepath, sqlite_filepath, filters_on=False)
+    scores, rewards, figures = swa.sqlite_to_scores_and_rewards(con)
+    assert len(scores) > 0
+    assert len(rewards) > 0
+    assert len(figures) > 0
+
+    con.close()
+
+
 def test_equality_between_manual_and_automatic_score_calculation_on_deep_funding_round_2():
     zip_filepath = os.path.join(os.path.dirname(__file__), "input", "raw.zip")
     df_filepath = os.path.join(
