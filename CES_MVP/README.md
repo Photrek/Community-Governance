@@ -23,7 +23,7 @@
 Data model using [Crow's_foot_notation](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model#Crow's_foot_notation)
 ```mermaid
 ---
-title: Community Engagement Highlevel Model
+title: Community Engagement High Level Model
 ---
 erDiagram
     USER ||--|| WALLET : owns
@@ -75,6 +75,7 @@ erDiagram
 ```
 
 # Square Root Voting Formula:
+Formula used in the report task `make report` to calculate the average grade of a proposal (see `report.sql`).
 
 $\text{Average Grade} = \frac{\sum (\sqrt{\text{tokens}_i} \times \text{grade}_i)}{\sum \sqrt{\text{tokens}_i}}$
 
