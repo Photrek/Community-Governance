@@ -13,9 +13,9 @@
 # System Overview
 
 <div align="center" style="background-color:white">
-    <img src="CES_MVP/docs/images/system_overview.png" alt="System context overview">
+    <img src="docs/images/system_overview.png" alt="System context overview">
     <p>
-        System context overview - <a target="__blank" href="CES_MVP/docs/images/system_overview.drawio">source</a>
+        System context overview - <a target="__blank" href="docs/images/system_overview.drawio">source</a>
     </p>
 </div>
 
