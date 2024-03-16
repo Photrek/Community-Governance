@@ -1,0 +1,11 @@
+config-version: 2
+version: 2
+sources:
+  - name: bronze     # the name we want to reference this source by
+    schema: bronze   # the schema the raw data was loaded into
+    tables:
+      - name: answers
+      - name: questions
+      - name: users
+      - name: wallet_links
+      

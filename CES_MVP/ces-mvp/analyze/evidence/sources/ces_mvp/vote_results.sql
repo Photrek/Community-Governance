@@ -1,0 +1,1 @@
+select * from vote_results

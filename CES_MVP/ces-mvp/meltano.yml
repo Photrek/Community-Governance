@@ -1,0 +1,45 @@
+version: 1
+default_environment: dev
+project_id: 7b4827b9-66bd-4b68-9589-aac2322081e4
+environments:
+- name: dev
+- name: staging
+- name: prod
+plugins:
+  extractors:
+  - name: tap-csv
+    variant: meltanolabs
+    pip_url: git+https://github.com/MeltanoLabs/tap-csv.git
+    config:
+      files:
+      - entity: answers
+        path: extract/answers.csv
+        keys:
+        - collection_id
+        - question_id
+      - entity: questions
+        path: extract/questions.csv
+        keys:
+        - question_id
+      - entity: users
+        path: extract/users.csv
+        keys:
+        - collection_id
+      - entity: wallet-links
+        path: extract/wallet-links.csv
+        keys:
+        - address
+        - collection_id
+  loaders:
+  - name: target-duckdb
+    variant: jwills
+    pip_url: target-duckdb~=0.6
+    config:
+      default_target_schema: bronze
+  utilities:
+  - name: dbt-duckdb
+    variant: jwills
+    pip_url: dbt-core dbt-duckdb git+https://github.com/meltano/dbt-ext.git@main
+  - name: evidence
+    variant: meltanolabs
+    pip_url: evidence-ext>=0.5
