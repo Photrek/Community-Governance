@@ -5,7 +5,7 @@ export
 DBT_COMMAND_PREFIX := cd $(DBT_FOLDER) && pipenv run dbt
 
 # phony targets
-.PHONY: transform debug compile db help setup docs
+.PHONY: transform debug compile db help setup docs reports
 
 # targets
 transform:
@@ -17,8 +17,15 @@ debug compile:
 	$(DBT_COMMAND_PREFIX) $@ --target $(DBT_TARGET)
 
 setup:
-	@echo "Setting up project"
+	@echo "🏗️ Setting up project\n"
+	@echo "💡 Make sure to have nvm installed and run 'nvm use' to use the correct node version\n"
 	pipenv install --dev
+	npm --prefix $(DBT_FOLDER)/reports install
+
+reports:
+	@echo "Generate reports using evidence.dev"
+	npm --prefix $(DBT_FOLDER)/reports run sources
+	npm --prefix $(DBT_FOLDER)/reports run dev
 
 docs:
 	@echo "Generating documentation"
