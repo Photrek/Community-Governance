@@ -1,0 +1,21 @@
+version: 2
+
+exposures:
+
+  - name: ces_dashboard
+    label: Sample Dashboard of CES Data
+    type: dashboard
+    maturity: low
+    url: http://localhost:3000/
+    description: >
+      Example dashboard demonstrating the flow of the data into a visual representation
+
+    depends_on:
+      - ref('gold_vote_results')
+      - ref('silver_proposal')
+      - ref('silver_rating')
+      - ref('silver_user')
+    
+    owner: 
+      name: Roman Preuß
+      email: romanpre@gmail.com
