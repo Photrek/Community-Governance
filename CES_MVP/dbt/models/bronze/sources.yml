@@ -1,0 +1,20 @@
+config-version: 2
+version: 2
+
+sources:
+  - name: deep_funding     # the name we want to reference this source by
+    schema: bronze
+    meta:
+      external_location: "../{{ env_var('DATA_DIR') }}/{name}.csv"
+    tables:
+      - name: answers
+      - name: questions
+      - name: users
+      
+  - name: wallet_linking_tool     # the name we want to reference this source by
+    schema: bronze
+    meta:
+      external_location: "../{{ env_var('DATA_DIR') }}/{name}.csv"
+    tables:
+      - name: wallet-links
+      

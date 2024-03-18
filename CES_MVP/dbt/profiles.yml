@@ -1,0 +1,9 @@
+community_engagement_score_transformations:
+  target: "{{ env_var('DBT_ENVIRONMENT', 'dev') }}"
+  outputs:
+    dev:
+      type: duckdb
+      schema: main
+      path: "../{{ env_var('DATA_DIR') }}/{{ env_var('DBT_ENVIRONMENT', 'dev') }}.duckdb"
+      # seems not to work
+      external_root: "../{{ env_var('DATA_DIR') }}/"
