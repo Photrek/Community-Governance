@@ -46,36 +46,41 @@ title: Community Engagement Model
 ---
 erDiagram
 
+    FUNDING_ROUND {
+        int funding_round_id PK
+        datetime start_timestamp
+        datetime end_timestamp
+    }
+
     USER {
-        int collection_id PK
+        int user_id PK
         bigint balance
-        decimal AGIX
     }
 
-    ANSWER {
-        int collection_id FK
-        int question_id FK
-        varchar answer
+    RATING {
+        int user_id FK
+        int proposal_id FK
+        varchar grade
         bigint total_balance
-        decimal AGIX
     }
 
-    QUESTION {
-        int question_id PK
-        varchar proposal
+    PROPOSAL {
+        int proposal_id PK
+        int funding_round_id FK
+        varchar title
     }
 
     WALLET_LINK {
         varchar address PK
-        int collection_id FK
+        int user_id FK
         bigint balance
-        decimal AGIX
     }
 
     WALLET ||--|{ WALLET_LINK : belongs_to
     USER ||--|{ WALLET_LINK : owns
-    USER ||--|{ ANSWER : gives
-    QUESTION  ||--|{ ANSWER : belongs_to
+    USER ||--|{ RATING : gives
+    PROPOSAL  ||--|{ RATING : belongs_to
+    FUNDING_ROUND ||--|{ PROPOSAL : part_of
 ```
 
 # Square Root Voting Formula:
