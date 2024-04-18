@@ -43,6 +43,7 @@ help:
 	@echo "  debug		- Run dbt debug"
 	@echo "  compile	- Run dbt compile"
 	@echo "  transform	- Run dbt transform performing all the transformations"
+	@echo "  reports	- Generate reports using evidence"
 
 # By default, when `make` is called without arguments, display help
 .DEFAULT_GOAL := help
