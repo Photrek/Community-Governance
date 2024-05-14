@@ -168,6 +168,12 @@ paths:
                         is_awarded:
                           type: boolean
                           description: Indicates whether the proposal is awarded.
+                        created_at:
+                          type: string
+                          description: Timestamp when the proposal was created.
+                        updated_at:
+                          type: string
+                          description: Timestamp when the proposal was last updated.
   /proposals/{proposal_id}/milestones:
     get:
       summary: Retrieves milestones for a single proposal based on the provided proposal ID.
@@ -206,6 +212,12 @@ paths:
                         budget:
                           type: string
                           description: Budget allocated for the milestone.
+                        created_at:
+                          type: string
+                          description: Timestamp when the milestone was created.
+                        updated_at:
+                          type: string
+                          description: Timestamp when the milestone was last updated.
   /proposals/{proposal_id}/reviews:
     get:
       summary: Retrieves reviews for a specific proposal.
@@ -320,15 +332,15 @@ paths:
                         content:
                           type: string
                           description: Content of the comment.
+                        comment_votes:
+                          type: integer
+                          description: Total number of votes this comment received.
                         created_at:
                           type: string
                           description: Timestamp when the comment was created.
                         updated_at:
                           type: string
                           description: Timestamp when the comment was last updated.
-                        comment_votes:
-                          type: integer
-                          description: Total number of votes this comment received.
   /comments/{comment_id}/votes:
     get:
       summary: Retrieves votes for a specific comment.
