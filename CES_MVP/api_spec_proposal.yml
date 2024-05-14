@@ -4,7 +4,7 @@ info:
   description: API for retrieving funding rounds, pools, and proposals.
   version: 1.0.0
 servers:
-  - url: https://some-domain.com/v1
+  - url: https://deepfunding.ai/wp-json/deepfunding/v1
 paths:
   /rounds:
     get:
@@ -119,6 +119,12 @@ paths:
           schema:
             type: integer
           description: ID of the round for which proposals are requested.
+        - in: query
+          name: pool_id
+          required: false
+          schema:
+            type: integer
+          description: ID of the pool for which proposals are requested.
       responses:
         '200':
           description: Proposals for the specified funding round.
