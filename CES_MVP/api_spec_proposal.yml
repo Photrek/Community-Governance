@@ -144,9 +144,9 @@ paths:
                         pool_id:
                           type: integer
                           description: Id of the pool related to the proposal.
-                        proposer_name:
+                        proposer_id:
                           type: string
-                          description: Name of the proposer.
+                          description: ID of the proposer.
                         title:
                           type: string
                           description: Title of the proposal.
