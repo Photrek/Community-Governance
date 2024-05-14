@@ -1,0 +1,467 @@
+openapi: 3.0.0
+info:
+  title: Voting Portal API
+  description: API for retrieving funding rounds, pools, and proposals.
+  version: 1.0.0
+servers:
+  - url: https://some-domain.com/v1
+paths:
+  /rounds:
+    get:
+      summary: Retrieves a list of funding rounds.
+      responses:
+        '200':
+          description: A list of funding rounds.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Unique identifier for the round.
+                    name:
+                      type: string
+                      description: Name of the round.
+                    slug:
+                      type: string
+                      description: Slug of the round.
+                    description:
+                      type: string
+                      description: Description of the round.
+  /pools:
+    get:
+      summary: Retrieves a list of funding pools.
+      responses:
+        '200':
+          description: A list of funding pools.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Unique identifier for the pool.
+                    name:
+                      type: string
+                      description: Name of the pool.
+                    slug:
+                      type: string
+                      description: Slug of the pool.
+                    description:
+                      type: string
+                      description: Description of the pool.
+  /rounds/{round_id}:
+    get:
+      summary: Retrieves details of a specific funding round.
+      parameters:
+        - in: path
+          name: round_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the round for which details are requested.
+      responses:
+        '200':
+          description: Details of the specified funding round.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pools_details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the pool.
+                        description:
+                          type: string
+                          description: Description of the pool.
+                        max_funding_in_pool:
+                          type: integer
+                          description: Maximum funding allowed in the pool.
+                  proposals:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        related_pool:
+                          type: string
+                          description: Name of the pool related to the proposal.
+                        proposer_name:
+                          type: string
+                          description: Name of the proposer.
+                        id:
+                          type: integer
+                          description: Unique identifier for the proposal.
+                        title:
+                          type: string
+                          description: Title of the proposal.
+                        content:
+                          type: string
+                          description: Content of the proposal.
+                        link:
+                          type: string
+                          description: URL link to the proposal.
+                        feature_image:
+                          type: string
+                          description: URL of the featured image for the proposal.
+                        requested_amount:
+                          type: integer
+                          description: Amount requested in the proposal.
+                        awarded_amount:
+                          type: integer
+                          description: Amount awarded in the proposal.
+                        is_awarded:
+                          type: boolean
+                          description: Indicates whether the proposal is awarded.
+  /rounds/{round_id}/proposals/milestones:
+    get:
+      summary: Retrieves proposal milestones for a given round and proposal type.
+      parameters:
+        - in: path
+          name: round_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the round for which proposal milestones are requested.
+        - in: query
+          name: proposal_type
+          required: true
+          schema:
+            type: integer
+          description: Type of proposal for which milestones are requested (1 for awarded proposals).
+      responses:
+        '200':
+          description: Proposal milestones for the specified round and proposal type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  proposals:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Unique identifier for the proposal.
+                        title:
+                          type: string
+                          description: Title of the proposal.
+                        content:
+                          type: string
+                          description: Content of the proposal.
+                        related_pool:
+                          type: string
+                          description: Name of the pool related to the proposal.
+                        proposer_name:
+                          type: string
+                          description: Name of the proposer.
+                        proposer_email:
+                          type: string
+                          description: Email address of the proposer.
+                        link:
+                          type: string
+                          description: URL link to the proposal.
+                        requested_amount:
+                          type: integer
+                          description: Amount requested in the proposal.
+                        awarded_amount:
+                          type: integer
+                          description: Amount awarded in the proposal.
+                        company_name:
+                          type: string
+                          description: Name of the proposing company.
+                        milestones:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              title:
+                                type: string
+                                description: Title of the milestone.
+                              status:
+                                type: string
+                                description: Status of the milestone.
+                              description:
+                                type: string
+                                description: Description of the milestone.
+                              development_description:
+                                type: string
+                                description: Development description of the milestone.
+                              budget:
+                                type: string
+                                description: Budget allocated for the milestone.
+  /proposals/{proposal_id}/milestones:
+    get:
+      summary: Retrieves milestones for a single proposal based on the provided proposal ID.
+      parameters:
+        - in: path
+          name: proposal_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the proposal for which milestones are requested.
+      responses:
+        '200':
+          description: Milestones for the specified proposal.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  milestones:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          description: Title of the milestone.
+                        status:
+                          type: string
+                          description: Status of the milestone.
+                        description:
+                          type: string
+                          description: Description of the milestone.
+                        development_description:
+                          type: string
+                          description: Development description of the milestone.
+                        budget:
+                          type: string
+                          description: Budget allocated for the milestone.
+  /users/{user_id}/reputation:
+    get:
+      summary: Retrieves the reputation score of a user along with their related proposals.
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the user for whom the reputation score is requested. Default is 11.
+        - in: query
+          name: round_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the round for which the reputation score is requested.
+        - in: query
+          name: proposal_type
+          required: true
+          schema:
+            type: integer
+          description: Type of proposal for which the reputation score is requested.
+      responses:
+        '200':
+          description: User reputation score and related proposals.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  proposals:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        proposer_name:
+                          type: string
+                          description: Name of the proposer.
+                        proposer_id:
+                          type: integer
+                          description: ID of the proposer.
+                        team_members_ids:
+                          type: array
+                          items:
+                            type: integer
+                          description: Array of team member IDs associated with the proposal.
+                        project_title:
+                          type: string
+                          description: Title of the project.
+                        is_awarded:
+                          type: boolean
+                          description: Indicates whether the project is awarded.
+                        project_status:
+                          type: string
+                          description: Status of the project.
+  /users/{user_id}/comments:
+    get:
+      summary: Retrieves comments related to a user's proposals.
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the user for whom comments are requested.
+        - in: query
+          name: round_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the round for which comments are requested.
+      responses:
+        '200':
+          description: Comments related to the user's proposals.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_comments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        proposal_name:
+                          type: string
+                          description: Name of the proposal.
+                        proposal_created_date:
+                          type: string
+                          description: Creation date of the proposal.
+                        proposal_author:
+                          type: integer
+                          description: ID of the proposal author.
+                        comment_id:
+                          type: integer
+                          description: ID of the comment.
+                        comment_post_link:
+                          type: string
+                          description: Link to the proposal associated with the comment.
+                        comment_content:
+                          type: string
+                          description: Content of the comment.
+                        comment_parent:
+                          type: integer
+                          description: ID of the parent comment.
+                        comment_votes:
+                          type: integer
+                          description: Total votes received by the comment.
+  /users/{user_id}/peer_reviews:
+    get:
+      summary: Retrieves peer reviews related to a user's proposals.
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the user for whom peer reviews are requested.
+        - in: query
+          name: round_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the round for which peer reviews are requested.
+      responses:
+        '200':
+          description: Peer reviews related to the user's proposals.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  proposals:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        proposer_name:
+                          type: string
+                          description: Name of the proposer.
+                        project_title:
+                          type: string
+                          description: Title of the project.
+                        rating:
+                          type: integer
+                          description: Overall rating received by the proposal.
+  /users/{user_id}/ratings_reviews:
+    get:
+      summary: Retrieves ratings reviews related to a user's proposals.
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the user for whom ratings reviews are requested.
+        - in: query
+          name: round_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the round for which ratings reviews are requested.
+      responses:
+        '200':
+          description: Ratings reviews related to the user's proposals.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  proposals:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        project_title:
+                          type: string
+                          description: Title of the project.
+                        date:
+                          type: string
+                          description: Date of the review.
+                        user_id:
+                          type: integer
+                          description: ID of the user who submitted the review.
+                        overall:
+                          type: integer
+                          description: Overall rating given in the review.
+  /users:
+    get:
+      summary: Retrieves details of subscriber users.
+      parameters:
+        - in: query
+          name: user
+          required: true
+          schema:
+            type: string
+          description: Number of users to retrieve. Use 'all' to get all users.
+        - in: query
+          name: page
+          required: true
+          schema:
+            type: integer
+          description: Page number for pagination. Default is 1.
+      responses:
+        '200':
+          description: Details of subscriber users.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_name:
+                          type: string
+                          description: Display name of the user.
+                        email:
+                          type: string
+                          description: Email address of the user.
+                        wallet_address:
+                          type: string
+                          description: Wallet address of the user, if available.
