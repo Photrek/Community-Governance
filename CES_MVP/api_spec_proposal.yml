@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Voting Portal API
   description: API for retrieving funding rounds, pools, and proposals.
-  version: 1.0.0
+  version: 1.0.1
 servers:
   - url: https://deepfunding.ai/wp-json/deepfunding/v1
 paths:
