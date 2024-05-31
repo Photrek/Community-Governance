@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Voting Portal API
   description: API for retrieving funding rounds, pools, and proposals.
-  version: 1.0.1
+  version: 1.0.2
 servers:
   - url: https://deepfunding.ai/wp-json/deepfunding/v1
 paths:
@@ -218,6 +218,81 @@ paths:
                         updated_at:
                           type: string
                           description: Timestamp when the milestone was last updated.
+  
+  /milestones:
+    get:
+      summary: Retrieves milestones based on filter criteria.
+      description:
+        If no parameters are provided, all milestones will be returned.
+      parameters:
+        - in: query
+          name: proposal_id
+          required: false
+          schema:
+            type: integer
+          description: ID of the proposal for which milestones are requested.
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: [pending, in_progress, completed]
+          description: Filter for milestone status (pending, in_progress, completed).
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination.
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 25
+          description: Maximum number of milestones per page.
+      responses:
+        '200':
+          description: Milestones based on filter criteria.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  milestones:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: 
+                          type: integer
+                          description: Unique identifier for the milestone.
+                        proposal_id:
+                          type: integer
+                          description: ID of the proposal associated with the milestone.
+                        title:
+                          type: string
+                          description: Title of the milestone.
+                        status:
+                          type: string
+                          description: Status of the milestone.
+                        description:
+                          type: string
+                          description: Description of the milestone.
+                        development_description:
+                          type: string
+                          description: Development description of the milestone.
+                        budget:
+                          type: string
+                          description: Budget allocated for the milestone.
+                        created_at:
+                          type: string
+                          description: Timestamp when the milestone was created.
+                        updated_at:
+                          type: string
+                          description: Timestamp when the milestone was last updated.
+
   /proposals/{proposal_id}/reviews:
     get:
       summary: Retrieves reviews for a specific proposal.
@@ -275,6 +350,91 @@ paths:
                         created_at:
                           type: string
                           description: Timestamp when the review was created.
+
+  /reviews:
+    get:
+      summary: Retrieves reviews based on filter criteria.
+      description:
+        If no parameters are provided, all reviews will be returned.
+      parameters:
+        - in: query
+          name: reviewer_id
+          required: false
+          schema:
+            type: integer
+          description: ID of the user for created the review.
+        - in: query
+          name: proposal_id
+          required: false
+          schema:
+            type: integer
+          description: ID of the proposal for which reviews are requested.
+        - in: query
+          name: type
+          required: false
+          schema:
+            type: string
+            enum: [expert, community]
+          description: Filter for review type (expert or community).
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination.
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 25
+          description: Maximum number of reviews per page.
+      responses:
+        '200':
+          description: Reviews based on filter criteria.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        review_id:
+                          type: integer
+                          description: ID of the review.
+                        proposal_id:
+                          type: integer
+                          description: ID of the proposal associated with the review.
+                        reviewer_id:
+                          type: integer
+                          description: user ID of the reviewer.
+                        review_type:
+                          type: string
+                          description: Type of review (e.g., peer review, ratings review).
+                        overall_rating:
+                          type: integer
+                          description: Overall rating given in the review.
+                        feasibility_rating:
+                          type: integer
+                          description: Feasibility rating given in the review.
+                        viability_rating:
+                          type: integer
+                          description: Viability rating given in the review.
+                        desirability_rating:
+                          type: integer
+                          description: Desirability rating given in the review.
+                        usefulness_rating:
+                          type: integer
+                          description: Usefulness rating given in the review.
+                        created_at:
+                          type: string
+                          description: Timestamp when the review was created.
+  
+
   /comments:
     get:
       summary: Retrieves comments based on filter criteria.
@@ -367,6 +527,65 @@ paths:
                         voter_id:
                           type: integer
                           description: ID of the voter.
+                        vote_type:
+                          type: string
+                          description: Type of vote (e.g., upvote, downvote).
+                        created_at:
+                          type: string
+                          description: Timestamp when the vote was created.
+
+
+  /comment_votes:
+    get:
+      summary: Retrieves comment votes based on filter criteria.
+      description:
+        If no parameters are provided, all comment votes will be returned.
+      parameters:
+        - in: query
+          name: voter_id
+          required: false
+          schema:
+            type: integer
+          description: ID of the user who voted on the comment.
+        - in: query
+          name: comment_id
+          required: false
+          schema:
+            type: integer
+          description: ID of the comment for which votes are requested.
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination.
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 25
+          description: Maximum number of comment votes per page.
+      responses:
+        '200':
+          description: Comment votes based on filter criteria.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comment_votes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        voter_id:
+                          type: integer
+                          description: ID of the voter.
+                        comment_id:
+                          type: integer
+                          description: ID of the comment associated with the vote.
                         vote_type:
                           type: string
                           description: Type of vote (e.g., upvote, downvote).
