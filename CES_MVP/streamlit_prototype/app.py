@@ -1,4 +1,6 @@
 import duckdb
+import json
+import voting
 import models
 
 import streamlit as st
@@ -13,18 +15,170 @@ import streamlit.components.v1 as components
 
 """
 # Community Engagement Score
+
+To evaluate the voting results:
+
+1. Choose which voting results you want to fetch
+1. Load the data from the voting results
+1. Upload the wallet-linking CSV file
 """
 
-@st.cache_resource
+# @st.cache_resource
 def get_db_connection() -> duckdb.DuckDBPyConnection:
     print("get_db_connection")
     con = duckdb.connect(database='demo.db')
-    models.load_all(con, 'models')
+    # models.load_all(con, 'models')
+    con.sql("CREATE SCHEMA IF NOT EXISTS db;")
+    con.sql("USE db;")
 
-    if 'db_connection' not in st.session_state:
-        st.session_state['db_connection'] = con
+    # if 'db_connection' not in st.session_state:
+    #     st.session_state['db_connection'] = con
     return con
 
+
+# TODO add check if data is already loaded
+# TODO add "hard refresh" button
+def fetch_users():
+    progress_text = "Fetching users from vorting portal. Please wait."
+    progress_bar = st.progress(0, text=progress_text)
+    all_users = []
+    for page_number, (page_data, total_pages) in enumerate(voting.download_users(), start=1):
+        # Update the progress bar
+        progress = page_number / total_pages
+        progress_bar.progress(progress, text=progress_text)
+
+        all_users.extend(page_data)
+
+    with open('data/users.json', 'w') as f:
+        json.dump(all_users, f)
+    
+    models.load(con, 'models/silver_users.sql')
+
+def fetch_comments():
+    progress_text = "Fetching comments from vorting portal. Please wait."
+    progress_bar = st.progress(0, text=progress_text)
+    all_users = []
+    for page_number, (page_data, total_pages) in enumerate(voting.download_comments(), start=1):
+        # Update the progress bar
+        progress = page_number / total_pages
+        progress_bar.progress(progress, text=progress_text)
+
+        all_users.extend(page_data)
+    with open('data/comments.json', 'w') as f:
+        json.dump(all_users, f)
+
+    models.load(con, 'models/silver_comments.sql')
+
+con = get_db_connection()
+# TODO: drop database if exists
+
+
+def fetch_proposals(con):
+    rounds = con.sql("SELECT id FROM silver_rounds").fetchall()
+    round_ids = [row[0] for row in rounds]
+
+    progress_text = "Fetching proposals from vorting portal. Please wait."
+    progress_bar = st.progress(0, text=progress_text)
+
+    proposals = []
+    for idx, round in enumerate(round_ids, start=1):
+        response = voting.download_proposals(round_id=round)
+        proposals.extend(response)
+        progress_bar.progress(idx / len(round_ids), text=progress_text)
+
+    with open('data/proposals.json', 'w') as f:
+        json.dump(proposals, f)
+
+    models.load(con, 'models/silver_proposals.sql')
+
+def fetch_milestones(con):
+    proposals = con.sql("SELECT id FROM silver_proposals").fetchall()
+    proposal_ids = [row[0] for row in proposals]
+
+    progress_text = "Fetching milestones from vorting portal. Please wait."
+    progress_bar = st.progress(0, text=progress_text)
+
+    milestones = []
+    for idx, proposal in enumerate(proposal_ids, start=1):
+        response = voting.download_milestones(proposal_id=proposal)
+        milestones.extend(response)
+        progress_bar.progress(idx / len(proposal_ids), text=progress_text)
+
+    with open('data/milestones.json', 'w') as f:
+        json.dump(milestones, f)
+
+    models.load(con, 'models/silver_milestones.sql')
+
+def fetch_reviews(con):
+    proposals = con.sql("SELECT id FROM silver_proposals").fetchall()
+    proposal_ids = [row[0] for row in proposals]
+
+    progress_text = "Fetching reviews from vorting portal. Please wait."
+    progress_bar = st.progress(0, text=progress_text)
+
+    reviews = []
+    for idx, proposal in enumerate(proposal_ids, start=1):
+        response = voting.download_reviews(proposal_id=proposal)
+        reviews.extend(response)
+        progress_bar.progress(idx / len(proposal_ids), text=progress_text)
+
+    with open('data/reviews.json', 'w') as f:
+        json.dump(reviews, f)
+
+    models.load(con, 'models/silver_reviews.sql')
+
+def fetch_comment_votes(con):
+    comments = con.sql("SELECT * FROM silver_comments WHERE comment_votes > 0").fetchall()
+    comments_ids = [row[0] for row in comments]
+
+    progress_text = "Fetching comment votes from vorting portal. Please wait."
+    progress_bar = st.progress(0, text=progress_text)
+
+    comment_votes = []
+    for idx, comment in enumerate(comments_ids, start=1):
+        response = voting.download_comment_votes(comment_id=comment)
+        comment_votes.extend(response)
+        progress_bar.progress(idx / len(comments_ids), text=progress_text)
+
+    with open('data/comment_votes.json', 'w') as f:
+        json.dump(comment_votes, f)
+
+    models.load(con, 'models/silver_comment_votes.sql')
+
+if st.button("Fetch voting results"):
+    # TODO find a way to clean the database
+    # con.execute("DROP SCHEMA db CASCADE;")
+    # con.execute("CREATE SCHEMA IF NOT EXISTS db;")
+    # con.execute("USE db;")
+
+    progress_text = "Fetching vorting portal data. Please wait."
+    progress_bar = st.progress(0, text=progress_text)
+
+
+    voting.download_rounds()
+    models.load(con, 'models/silver_rounds.sql')
+    models.load(con, 'models/silver_rounds_pools.sql')
+    progress_bar.progress(0.25, text=progress_text)
+
+    voting.download_pools()
+    models.load(con, 'models/silver_pools.sql')
+    progress_bar.progress(0.5, text=progress_text)
+
+    fetch_users()
+    fetch_comments()
+    fetch_proposals(con)
+    fetch_milestones(con)
+    fetch_reviews(con)
+    fetch_comment_votes(con)
+
+    """
+    Data successfully loaded
+    """
+
+else:
+    """
+    Data not loaded
+    """
 
 uploaded_files = st.file_uploader("Provide the following csv files (`answers.csv`, `questions.csv`, `users.csv`, `wallet-links.csv`):", accept_multiple_files=True)
 file_names = [file.name for file in uploaded_files]
@@ -35,8 +189,6 @@ print("file_names", file_names)
 if ["answers.csv", "questions.csv", "users.csv", "wallet-links.csv"] != file_names:
     # TODO: Load the CSV files into the database
     st.stop()
-
-con = get_db_connection()
 
 
 """
