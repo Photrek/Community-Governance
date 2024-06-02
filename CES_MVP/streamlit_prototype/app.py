@@ -80,54 +80,6 @@ else:
     """
     # st.stop()
 
-def show_round_selection(con):
-    rounds_raw = con.sql("SELECT id, name FROM silver_rounds").fetchall()
-    rounds = [(row[0], row[1]) for row in rounds_raw]
-
-    option = st.selectbox(
-    "Which funding round do you want to evaluate?", 
-    rounds,
-    format_func=lambda x: x[1],
-    index=None,
-    placeholder="Select funding round...",
-    )
-
-    if not option:
-        st.stop()
-
-    f"You selected: {option[1]}"
-
-    return option
-
-option = show_round_selection(con)
-round_id = option[0]
-
-"""
-## Input Data
-"""
-users = con.sql("SELECT * FROM silver_users").df()
-"### Users"
-users
-
-col1, col2 = st.columns(2)
-
-with col1:
-    proposals = con.sql(f"SELECT * FROM silver_proposals where round_id = {round_id}").df()
-    "### Proposals"
-    proposals
-
-with col2:
-    comments = con.sql(f"""
-                       SELECT * 
-                       FROM silver_comments
-                       WHERE proposal_id IN (
-                           SELECT id
-                           FROM silver_proposals
-                           WHERE round_id = {round_id}
-                       )
-                       """).df()
-    "### Comments"
-    comments
 
 # Legacy code 👇👇👇
 
