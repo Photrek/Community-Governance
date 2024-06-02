@@ -1,4 +1,5 @@
 import db
+import utils
 
 import gravis as gv
 import networkx as nx
@@ -7,7 +8,7 @@ import streamlit.components.v1 as components
 
 
 """
-Network Analysis
+# Network Analysis
 
 > TODO:
 >
@@ -15,9 +16,22 @@ Network Analysis
 """
 con = db.get_db_connection()
 
+option = utils.round_selector(con)
+round_id = option[0]
+
 g = nx.DiGraph()
 
-users = con.sql("SELECT user_id FROM silver_users").fetchall()
+"## Relation between proposal creator and proposals"
+
+users = con.sql(f"""
+                SELECT user_id
+                FROM silver_users
+                WHERE user_id IN (
+                    SELECT user_id
+                    FROM silver_proposals
+                    WHERE round_id = {round_id}
+                )
+                """).fetchall()
 n_half = len(users) // 2
 for i, row in enumerate(users):
     id = f"user_{row[0]}"
@@ -26,7 +40,7 @@ for i, row in enumerate(users):
 
     g.add_node(id, x=x, y=y, color='blue')
 
-proposals = con.sql("SELECT id FROM silver_proposals").fetchall()
+proposals = con.sql(f"SELECT id FROM silver_proposals where round_id = {round_id}").fetchall()
 n_half = len(proposals) // 2
 for i, row in enumerate(proposals):
     id = f"proposal_{row[0]}"
