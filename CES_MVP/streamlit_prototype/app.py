@@ -1,5 +1,5 @@
-import duckdb
 import voting
+import db
 
 import streamlit as st
 import gravis as gv
@@ -23,30 +23,11 @@ To evaluate the voting results:
 1. Upload the wallet-linking CSV file
 """
 
-# @st.cache_resource
-def get_db_connection() -> duckdb.DuckDBPyConnection:
-    print("get_db_connection")
-    con = duckdb.connect(database='demo.db')
-    # models.load_all(con, 'models')
-    con.sql("CREATE SCHEMA IF NOT EXISTS db;")
-    con.sql("USE db;")
-
-    # if 'db_connection' not in st.session_state:
-    #     st.session_state['db_connection'] = con
-    return con
-
-
-# TODO add check if data is already loaded
-# TODO add "hard refresh" button
-
-
-con = get_db_connection()
-# TODO: drop database if exists
+con = db.get_db_connection()
 
 def __progress_updater(progress_text: str) -> Callable[[int, int], None]:
     progress_bar = st.progress(0, text=progress_text)
     return lambda page, total_pages: progress_bar.progress(page / total_pages, text=progress_text)
-
 
 if st.button("Hard reset the database", type="primary"):
     con.execute("USE demo;")
