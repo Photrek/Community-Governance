@@ -1,5 +1,5 @@
 import voting
-import db
+import cesdb
 
 import streamlit as st
 import gravis as gv
@@ -23,7 +23,7 @@ To evaluate the voting results:
 1. Upload the wallet-linking CSV file
 """
 
-con = db.get_db_connection()
+con = cesdb.get_db_connection()
 
 def __progress_updater(progress_text: str) -> Callable[[int, int], None]:
     progress_bar = st.progress(0, text=progress_text)
