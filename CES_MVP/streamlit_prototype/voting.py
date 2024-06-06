@@ -7,14 +7,15 @@ import json
 import requests
 import models
 import duckdb
+import cesdb
 
 from typing import Callable
 
 url = os.getenv('VOTING_PORTAL_HOST')
 
+con = cesdb.get_db_connection()
 
-def load_proposals(con: duckdb.DuckDBPyConnection,
-                   progress_updater: Callable[[int, int], None]) -> None:
+def load_proposals(progress_updater: Callable[[int, int], None]) -> None:
     rounds = con.sql("SELECT id FROM silver_rounds").fetchall()
     round_ids = [row[0] for row in rounds]
 
@@ -52,8 +53,7 @@ def __download_proposals(round_id):
     return proposals
 
 
-def load_reviews(con: duckdb.DuckDBPyConnection,
-                 progress_updater: Callable[[int, int], None]) -> None:
+def load_reviews(progress_updater: Callable[[int, int], None]) -> None:
     proposals = con.sql("SELECT id FROM silver_proposals").fetchall()
     proposal_ids = [row[0] for row in proposals]
 
@@ -68,7 +68,9 @@ def load_reviews(con: duckdb.DuckDBPyConnection,
     models.load(con, 'models/silver_reviews.sql')
 
 def __download_reviews(proposal_id):
-    response = requests.get(f"{url}/proposals/{proposal_id}/reviews")
+    review_url = f"{url}/proposals/{proposal_id}/reviews"
+    print(f"Fetching reviews for proposal: {proposal_id} from {review_url}")
+    response = requests.get(review_url)
     raw_data = response.json()
 
     # check if reviews where found
@@ -94,8 +96,7 @@ def __download_reviews(proposal_id):
         })
     return reviews
 
-def load_comment_votes(con: duckdb.DuckDBPyConnection,
-                       progress_updater: Callable[[int, int], None]) -> None:
+def load_comment_votes(progress_updater: Callable[[int, int], None]) -> None:
     comments = con.sql("SELECT * FROM silver_comments WHERE comment_votes > 0").fetchall()
     comments_ids = [row[0] for row in comments]
 
@@ -122,8 +123,7 @@ def __download_comment_votes(comment_id):
         })
     return votes
 
-def load_milestones(con: duckdb.DuckDBPyConnection,
-                    progress_updater: Callable[[int, int], None]) -> None:
+def load_milestones(progress_updater: Callable[[int, int], None]) -> None:
     proposals = con.sql("SELECT id FROM silver_proposals").fetchall()
     proposal_ids = [row[0] for row in proposals]
 
@@ -153,7 +153,7 @@ def __download_milestones(proposal_id):
         })
     return milestones
 
-def load_rounds_and_pools_connection(con: duckdb.DuckDBPyConnection) -> None:
+def load_rounds_and_pools_connection() -> None:
     rounds, rounds_pools = __fetch_rounds_pools()
     
     __save_to_json(rounds, 'data/rounds.json')
@@ -185,7 +185,7 @@ def __fetch_rounds_pools():
             
     return rounds,rounds_pools
 
-def load_pools(con: duckdb.DuckDBPyConnection) -> None:
+def load_pools() -> None:
     # download the voting portal data
     response = requests.get(f"{url}/pools")
     raw_data = response.json()  # Convert response to JSON format
@@ -211,16 +211,15 @@ def fetch_pages(endpoint_path: str, selector: str):
         page = data['pagination']['next_page']
 
 
-def load_users(con: duckdb.DuckDBPyConnection, progress_updater: Callable[[int, int], None]) -> None:
-    __batch_load(con, 'users', 'users', progress_updater)
+def load_users(progress_updater: Callable[[int, int], None]) -> None:
+    __batch_load('users', 'users', progress_updater)
 
-def load_comments(con: duckdb.DuckDBPyConnection, progress_updater: Callable[[int, int], None]) -> None:
-    __batch_load(con, 'comments', 'comments', progress_updater)
+def load_comments(progress_updater: Callable[[int, int], None]) -> None:
+    __batch_load('comments', 'comments', progress_updater)
 
-def __batch_load(con: duckdb.DuckDBPyConnection,
-              endpoint_path: str, 
-              selector: str,
-              progress_updater: Callable[[int, int], None]) -> None:
+def __batch_load(endpoint_path: str, 
+                 selector: str,
+                 progress_updater: Callable[[int, int], None]) -> None:
     all_data = []
     for page_number, (page_data, total_pages) in enumerate(fetch_pages(endpoint_path, selector), start=1):
         all_data.extend(page_data)

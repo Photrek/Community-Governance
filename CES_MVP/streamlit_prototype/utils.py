@@ -1,9 +1,11 @@
-import duckdb
+import cesdb
 
 import streamlit as st
 
 
-def round_selector(con: duckdb.DuckDBPyConnection):
+con = cesdb.get_db_connection()
+
+def round_selector():
     rounds_raw = con.sql("SELECT id, name FROM silver_rounds").fetchall()
     rounds = [(row[0], row[1]) for row in rounds_raw]
 

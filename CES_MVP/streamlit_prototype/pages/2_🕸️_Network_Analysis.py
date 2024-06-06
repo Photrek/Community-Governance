@@ -1,4 +1,4 @@
-import db
+import cesdb
 import utils
 
 import gravis as gv
@@ -14,9 +14,9 @@ import streamlit.components.v1 as components
 >
 > try out pyvis if it's faster: https://pyvis.readthedocs.io/en/latest/tutorial.html#getting-started
 """
-con = db.get_db_connection()
+con = cesdb.get_db_connection()
 
-option = utils.round_selector(con)
+option = utils.round_selector()
 round_id = option[0]
 
 g = nx.DiGraph()
