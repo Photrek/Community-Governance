@@ -23,3 +23,39 @@ def round_selector():
     f"You selected: {option[1]}"
 
     return option
+
+def mandatory_tables_loaded():
+    mandatory_tables = [
+        "silver_comment_votes",
+        "silver_proposals",
+        "silver_rounds_pools",
+        "silver_comments",
+        "silver_ratings",
+        "silver_users",
+        "silver_milestones",
+        "silver_reviews",
+        "silver_wallet_links",
+        "silver_pools",
+        "silver_rounds"
+    ]
+    loaded_tables = con.execute("SHOW ALL TABLES;").fetchall()
+    loaded_tables = [table[2] for table in loaded_tables]
+
+    missing_tables = [table for table in mandatory_tables if table not in loaded_tables]
+    print(f"Missing tables: {missing_tables}")
+
+    all_tables_loaded = all(table in loaded_tables for table in mandatory_tables)
+
+    print(f"all_tables_loaded {all_tables_loaded}")
+
+    return all_tables_loaded
+
+def hide_sidebar(hide: bool = True):
+    if hide:
+        st.markdown("""
+        <style>
+            section[data-testid="stSidebar"][aria-expanded="true"]{
+                display: none;
+            }
+        </style>
+        """, unsafe_allow_html=True)
