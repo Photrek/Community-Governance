@@ -6,7 +6,6 @@ import os
 import json
 import requests
 import models
-import duckdb
 import cesdb
 
 from typing import Callable
@@ -32,7 +31,6 @@ def load_proposals(progress_updater: Callable[[int, int], None]) -> None:
 def __download_proposals(round_id):
     response = requests.get(f"{url}/rounds/{round_id}/proposals")
     raw_data = response.json()
-    # return raw_data['proposals']
 
     proposals = []
     for vote in raw_data['proposals']:
@@ -52,106 +50,14 @@ def __download_proposals(round_id):
         })
     return proposals
 
-
 def load_reviews(progress_updater: Callable[[int, int], None]) -> None:
-    proposals = con.sql("SELECT id FROM silver_proposals").fetchall()
-    proposal_ids = [row[0] for row in proposals]
-
-    reviews = []
-    for idx, proposal in enumerate(proposal_ids, start=1):
-        response = __download_reviews(proposal_id=proposal)
-        reviews.extend(response)
-        progress_updater(idx, len(proposal_ids))
-
-    __save_to_json(reviews, 'data/reviews.json')
-
-    models.load(con, 'models/silver_reviews.sql')
-
-def __download_reviews(proposal_id):
-    review_url = f"{url}/proposals/{proposal_id}/reviews"
-    print(f"Fetching reviews for proposal: {proposal_id} from {review_url}")
-    response = requests.get(review_url)
-    raw_data = response.json()
-
-    # check if reviews where found
-    if not isinstance(raw_data['reviews'], list):
-        print(f"no reviews found for proposal: {proposal_id}")
-        return []
-    ''''''
-    print(raw_data)
-
-    reviews = []
-    for review in raw_data['reviews']:
-        reviews.append({
-            'proposal_id': proposal_id,
-            'review_id': review['review_id'],
-            'reviewer_id': review['reviewer_id'],
-            'review_type': review['review_type'],
-            'overall_rating': review['overall_rating'],
-            'feasibility_rating': review['feasibility_rating'],
-            'viability_rating': review['viability_rating'],
-            'desirability_rating': review['desirability_rating'],
-            'usefulness_rating': review['usefulness_rating'],
-            'created_at': review['created_at'],
-        })
-    return reviews
+    __batch_load('reviews', 'reviews', progress_updater)
 
 def load_comment_votes(progress_updater: Callable[[int, int], None]) -> None:
-    comments = con.sql("SELECT * FROM silver_comments WHERE comment_votes > 0").fetchall()
-    comments_ids = [row[0] for row in comments]
-
-    comment_votes = []
-    for idx, comment in enumerate(comments_ids, start=1):
-        response = __download_comment_votes(comment_id=comment)
-        comment_votes.extend(response)
-        progress_updater(idx, len(comments_ids))
-
-    __save_to_json(comment_votes, 'data/comment_votes.json')
-
-    models.load(con, 'models/silver_comment_votes.sql')
-
-def __download_comment_votes(comment_id):
-    response = requests.get(f"{url}/comments/{comment_id}/votes")
-    raw_data = response.json()
-
-    votes = []
-    for vote in raw_data['votes']:
-        votes.append({
-            'comment_id': comment_id,
-            'voter_id': vote['voter_id'],
-            'vote_type': vote['vote_type'],
-        })
-    return votes
+    __batch_load('comment_votes', 'votes', progress_updater, model_name='comment_votes')
 
 def load_milestones(progress_updater: Callable[[int, int], None]) -> None:
-    proposals = con.sql("SELECT id FROM silver_proposals").fetchall()
-    proposal_ids = [row[0] for row in proposals]
-
-    milestones = []
-    for idx, proposal in enumerate(proposal_ids, start=1):
-        response = __download_milestones(proposal_id=proposal)
-        milestones.extend(response)
-        progress_updater(idx, len(proposal_ids))
-
-    __save_to_json(milestones, 'data/milestones.json')
-
-    models.load(con, 'models/silver_milestones.sql')
-
-def __download_milestones(proposal_id):
-    response = requests.get(f"{url}/proposals/{proposal_id}/milestones")
-    raw_data = response.json()
-    
-    milestones = []
-    for milestone in raw_data['milestones']:
-        milestones.append({
-            'proposal_id': proposal_id,
-            'title': milestone['title'],
-            'status': milestone['status'],
-            'description': milestone['description'],
-            'development_description': milestone['development_description'],
-            'budget': milestone['budget'],
-        })
-    return milestones
+    __batch_load('milestones', 'milestones', progress_updater)
 
 def load_rounds_and_pools_connection() -> None:
     rounds, rounds_pools = __fetch_rounds_pools()
@@ -219,17 +125,22 @@ def load_comments(progress_updater: Callable[[int, int], None]) -> None:
 
 def __batch_load(endpoint_path: str, 
                  selector: str,
-                 progress_updater: Callable[[int, int], None]) -> None:
+                 progress_updater: Callable[[int, int], None],
+                 model_name: str = None) -> None:
+    if model_name is None:
+        model_name = selector
+
     all_data = []
     for page_number, (page_data, total_pages) in enumerate(fetch_pages(endpoint_path, selector), start=1):
         all_data.extend(page_data)
         progress_updater(page_number, total_pages)
 
-    __save_to_json(all_data, f'data/{selector}.json')
+    __save_to_json(all_data, f'data/{model_name}.json')
 
-    models.load(con, f'models/silver_{selector}.sql')
-
+    print(f"Loading model: {model_name}")
+    models.load(con, f'models/silver_{model_name}.sql')
 
 def __save_to_json(data, path):
+    print(f"Saving data to {path}")
     with open(path, 'w') as f:
         json.dump(data, f)
