@@ -8,7 +8,7 @@ SELECT
     CASE 
         WHEN collection_id ~ '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$' THEN collection_id::VARCHAR
         ELSE NULL
-    END AS collection_id,
+    END AS collection_uuid,
 
     CASE 
         WHEN collection_id ~ '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$' THEN NULL
