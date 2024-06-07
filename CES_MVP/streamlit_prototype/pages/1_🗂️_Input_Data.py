@@ -59,7 +59,7 @@ if st.button("Hard reset the database", type="primary"):
     """
 
 def manual_csv_upload(file_name: str, model_name: str, expected_columns: list = []):
-    raw_file = st.file_uploader(f"Provide the `{file_name}` containing the columsn `{expected_columns}`:", accept_multiple_files=False)
+    raw_file = st.file_uploader(f"Provide the `{file_name}` containing the columns `{expected_columns}`:", accept_multiple_files=False)
     if raw_file is not None:
         # verify if the csv file contains all the expected columns
         header = raw_file.getvalue().decode().splitlines()[0]
@@ -75,11 +75,35 @@ def manual_csv_upload(file_name: str, model_name: str, expected_columns: list = 
         {model_name} successfully loaded
         """
 
-"## Proposal Rating Data"
-manual_csv_upload(file_name="answers.csv", model_name="ratings", expected_columns=["collection_id", "question_id", "answer", "total_balance"])
+"## Voting Data (excel file)"
+def manual_voting_xlsx_upload():
+    raw_file = st.file_uploader("Provide the voting data excel file:", accept_multiple_files=False)
+    if raw_file is not None:
 
-"## Wallet Linking Data"
-manual_csv_upload(file_name="wallet-links.csv", model_name="wallet_links", expected_columns=["address", "collection_id", "balance"])
+        with open("data/voting.xlsx", "wb") as f:
+            f.write(raw_file.getvalue())
+
+        # enable excel import
+        con.execute("INSTALL spatial;")
+        con.execute("LOAD spatial;")
+
+        models.load(con, 'models/bronze_answers.sql')
+        models.load(con, 'models/bronze_collections.sql')
+        models.load(con, 'models/bronze_collection_balances.sql')
+        models.load(con, 'models/bronze_questions.sql')
+
+        """
+        Voting data successfully loaded
+        """
+
+
+manual_voting_xlsx_upload()
+
+# "## Proposal Rating Data"
+# manual_csv_upload(file_name="answers.csv", model_name="ratings", expected_columns=["collection_id", "question_id", "answer", "total_balance"])
+
+# "## Wallet Linking Data"
+# manual_csv_upload(file_name="wallet-links.csv", model_name="wallet_links", expected_columns=["address", "collection_id", "balance"])
 
 if not utils.mandatory_tables_loaded():
     utils.hide_sidebar(True)

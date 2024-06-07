@@ -30,23 +30,25 @@ def mandatory_tables_loaded():
         "silver_proposals",
         "silver_rounds_pools",
         "silver_comments",
-        "silver_ratings",
         "silver_users",
         "silver_milestones",
         "silver_reviews",
-        "silver_wallet_links",
         "silver_pools",
-        "silver_rounds"
+        "silver_rounds",
+
+        # expect excel import
+        "bronze_questions",
+        # "silver_wallet_links",
+        # "silver_ratings",
     ]
     loaded_tables = con.execute("SHOW ALL TABLES;").fetchall()
     loaded_tables = [table[2] for table in loaded_tables]
 
     missing_tables = [table for table in mandatory_tables if table not in loaded_tables]
-    print(f"Missing tables: {missing_tables}")
+    if missing_tables:
+        print(f"Missing tables: {missing_tables}")
 
     all_tables_loaded = all(table in loaded_tables for table in mandatory_tables)
-
-    print(f"all_tables_loaded {all_tables_loaded}")
 
     return all_tables_loaded
 
