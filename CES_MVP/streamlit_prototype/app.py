@@ -1,5 +1,6 @@
-import voting
+import deep_funding_api
 import cesdb
+import models
 
 import streamlit as st
 import gravis as gv
@@ -16,11 +17,8 @@ from typing import Callable
 """
 # Community Engagement Score
 
-To evaluate the voting results:
-
-1. Choose which voting results you want to fetch
-1. Load the data from the voting results
-1. Upload the wallet-linking CSV file
+1. Load the portal data
+2. Load the voting data
 """
 
 con = cesdb.get_db_connection()
@@ -43,30 +41,24 @@ if st.button("Reload voting portal data"):
     progress_text = "Fetching general vorting portal data. Please wait."
     progress_bar = st.progress(0, text=progress_text)
 
-    voting.load_rounds_and_pools_connection(con=con)
+    deep_funding_api.load_rounds_and_pools_connection()
     progress_bar.progress(0.5, text=progress_text)
 
-    voting.load_pools(con=con)
+    deep_funding_api.load_pools()
     progress_bar.progress(1.0, text=progress_text)
 
     
-    voting.load_users(con=con,
-                        progress_updater=__progress_updater("Fetching users from voting portal. Please wait."))
+    deep_funding_api.load_users(progress_updater=__progress_updater("Fetching users from voting portal. Please wait."))
 
-    voting.load_comments(con=con,
-                            progress_updater=__progress_updater("Fetching comments from voting portal. Please wait."))
+    deep_funding_api.load_comments(progress_updater=__progress_updater("Fetching comments from voting portal. Please wait."))
 
-    voting.load_proposals(con=con,
-                            progress_updater=__progress_updater("Fetching proposals from voting portal. Please wait."))
+    deep_funding_api.load_proposals(progress_updater=__progress_updater("Fetching proposals from voting portal. Please wait."))
     
-    voting.load_milestones(con=con,
-                            progress_updater=__progress_updater("Fetching milestones from voting portal. Please wait."))
+    deep_funding_api.load_milestones(progress_updater=__progress_updater("Fetching milestones from voting portal. Please wait."))
     
-    voting.load_reviews(con=con,
-                        progress_updater=__progress_updater("Fetching reviews from voting portal. Please wait."))
+    deep_funding_api.load_reviews(progress_updater=__progress_updater("Fetching reviews from voting portal. Please wait."))
     
-    voting.load_comment_votes(con=con,
-                        progress_updater=__progress_updater("Fetching comment votes from voting portal. Please wait."))
+    deep_funding_api.load_comment_votes(progress_updater=__progress_updater("Fetching comment votes from voting portal. Please wait."))
 
     """
     Data successfully loaded
@@ -81,17 +73,27 @@ else:
     # st.stop()
 
 
-# Legacy code 👇👇👇
-
-uploaded_files = st.file_uploader("Provide the following csv files (`answers.csv`, `questions.csv`, `users.csv`, `wallet-links.csv`):", accept_multiple_files=True)
-file_names = [file.name for file in uploaded_files]
-
-print("file_names", file_names)
-
-# Check if "answers.csv" and "questions.csv" are in the uploaded_files list
-if ["answers.csv", "questions.csv", "users.csv", "wallet-links.csv"] != file_names:
-    # TODO: Load the CSV files into the database
+# Upload actual votes
+votes_file = st.file_uploader("Provide the answers.csv:", accept_multiple_files=False)
+if votes_file is None:
     st.stop()
+
+if votes_file.name != "answers.csv":
+    st.error("Please upload the answers.csv file")
+    st.stop()
+
+with open("data/votes.csv", "wb") as f:
+    f.write(votes_file.getvalue())
+models.load(con, 'models/silver_ratings.sql')
+"""
+Proposal ratings successfully saved to disk
+"""
+    
+# TODO:
+# 1. once everyhing is loaded, perform gold transformations
+# 2. visualize the data in the network graph
+
+st.stop()
 
 
 """
