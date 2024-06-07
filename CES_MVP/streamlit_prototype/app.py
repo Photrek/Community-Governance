@@ -1,13 +1,12 @@
-import deep_funding_api
+
 import cesdb
-import models
+import utils
 
 import streamlit as st
 import gravis as gv
 import networkx as nx
 
 import streamlit.components.v1 as components
-from typing import Callable
 
 # Examples to checkout:
 # * https://github.com/mikekenneth/streamlit_duckdb/blob/main/home.py
@@ -23,98 +22,17 @@ from typing import Callable
 
 con = cesdb.get_db_connection()
 
-def __progress_updater(progress_text: str) -> Callable[[int, int], None]:
-    progress_bar = st.progress(0, text=progress_text)
-    return lambda page, total_pages: progress_bar.progress(page / total_pages, text=progress_text)
-
-if st.button("Hard reset the database", type="primary"):
-    con.execute("USE demo;")
-    con.execute("DROP SCHEMA db CASCADE;")
-    con.execute("CREATE SCHEMA IF NOT EXISTS db;")
-    con.execute("USE db;")
-    """
-    Database successfully reset
-    """
-
-if st.button("Reload voting portal data"):
-    
-    progress_text = "Fetching general vorting portal data. Please wait."
-    progress_bar = st.progress(0, text=progress_text)
-
-    deep_funding_api.load_rounds_and_pools_connection()
-    progress_bar.progress(0.5, text=progress_text)
-
-    deep_funding_api.load_pools()
-    progress_bar.progress(1.0, text=progress_text)
-
-    
-    deep_funding_api.load_users(progress_updater=__progress_updater("Fetching users from voting portal. Please wait."))
-
-    deep_funding_api.load_comments(progress_updater=__progress_updater("Fetching comments from voting portal. Please wait."))
-
-    deep_funding_api.load_proposals(progress_updater=__progress_updater("Fetching proposals from voting portal. Please wait."))
-    
-    deep_funding_api.load_milestones(progress_updater=__progress_updater("Fetching milestones from voting portal. Please wait."))
-    
-    deep_funding_api.load_reviews(progress_updater=__progress_updater("Fetching reviews from voting portal. Please wait."))
-    
-    deep_funding_api.load_comment_votes(progress_updater=__progress_updater("Fetching comment votes from voting portal. Please wait."))
-
-    """
-    Data successfully loaded
-    """
-
+if utils.mandatory_tables_loaded():
+    utils.hide_sidebar(False)
 else:
-    """
-    Data not loaded
-
-    > TODO: check if data is already loaded
-    """
-    # st.stop()
-
-
-# Upload actual votes
-votes_file = st.file_uploader("Provide the answers.csv:", accept_multiple_files=False)
-if votes_file is None:
-    st.stop()
-
-if votes_file.name != "answers.csv":
-    st.error("Please upload the answers.csv file")
-    st.stop()
-
-with open("data/votes.csv", "wb") as f:
-    f.write(votes_file.getvalue())
-models.load(con, 'models/silver_ratings.sql')
-"""
-Proposal ratings successfully saved to disk
-"""
+    utils.hide_sidebar(True)
+    st.switch_page("pages/1_🗂️_Input_Data.py")
     
 # TODO:
 # 1. once everyhing is loaded, perform gold transformations
 # 2. visualize the data in the network graph
 
 st.stop()
-
-
-"""
-## Input Data
-"""
-col1, col2 = st.columns(2)
-
-with col1:
-    ratings = con.sql("SELECT * FROM silver_rating").df()
-    "### Ratings"
-    ratings 
-
-with col2:
-    users = con.sql("SELECT * FROM silver_user").df()
-    "### Users"
-    users
-
-"### Proposals"
-proposals = con.sql("SELECT * FROM silver_proposal").df()
-proposals
-
 
 """
 ## Vote results
