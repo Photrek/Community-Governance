@@ -20,7 +20,7 @@ FROM
     stg_vp_questions AS p
 LEFT JOIN 
     -- stg_vp_rating AS r
-    stg_vp_answers AS r
+    stg_vp_ratings AS r
 -- ON p.proposal_id = r.proposal_id
 ON p.question_id = r.question_id
 GROUP BY 
