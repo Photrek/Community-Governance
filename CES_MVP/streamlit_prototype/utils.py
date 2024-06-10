@@ -52,6 +52,13 @@ def mandatory_tables_loaded():
 
     return all_tables_loaded
 
+def all_tables():
+    all_tables = con.execute("SHOW ALL TABLES;").fetchall()
+    return [table[2] for table in all_tables]
+
+def table_exists(table_name):
+    return table_name in all_tables()
+
 def hide_sidebar(hide: bool = True):
     if hide:
         st.markdown("""

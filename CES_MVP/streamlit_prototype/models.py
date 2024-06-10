@@ -18,6 +18,9 @@ def load_all(con: duckdb.DuckDBPyConnection, path: str):
         print("loading", model_path)
         load(con, model_path)
 
+    gold_transformations(con)
+
+def gold_transformations(con: duckdb.DuckDBPyConnection, path: str):
     for model_path in glob.glob(f"{path}/gold*.sql"):
         print("loading", model_path)
         load(con, model_path)
