@@ -40,7 +40,7 @@ def manual_voting_xlsx_upload():
         models.load(con, 'models/silver_ratings.sql')
 
         """
-        Voting data successfully loaded
+        🎉 Voting data successfully loaded
         """
 
 def perform_gold_transformations():
@@ -62,7 +62,7 @@ Make sure the excel file provides the following sheets (case-sensitive):
 
 manual_voting_xlsx_upload()
 
-"## Proposal Portal Data"
+"## Proposal Portal Data (API)"
 
 if st.button("Fetch from API"):
     
