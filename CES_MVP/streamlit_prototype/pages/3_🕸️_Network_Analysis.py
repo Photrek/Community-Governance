@@ -12,7 +12,7 @@ import streamlit.components.v1 as components
 
 
 """
-# Network Analysis
+# 🕸️ Network Analysis
 
 > TODO:
 >
@@ -27,7 +27,7 @@ net = Network(
     width="899px",
     notebook=True,
     heading='',
-    filter_menu=True,
+    # filter_menu=True,
     # select_menu=True,
 )
 

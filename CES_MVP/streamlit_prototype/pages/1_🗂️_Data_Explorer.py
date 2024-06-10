@@ -5,7 +5,7 @@ import utils
 con = cesdb.get_db_connection()
 
 """
-# Data Explorer
+# 🗂️ Data Explorer
 Explore all tables in the local database.
 """
 
