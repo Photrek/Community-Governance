@@ -22,7 +22,7 @@ def get_db_connection() -> duckdb.DuckDBPyConnection:
 con = get_db_connection()
 
 
-users_df = con.sql("SELECT user_id, balance, (ROW_NUMBER() OVER (ORDER BY user_id) * 10) AS pos_x, 100 as pos_y FROM silver_user").df()
+users_df = con.sql("SELECT user_id, balance, (ROW_NUMBER() OVER (ORDER BY user_id) * 10) AS pos_x, 100 as pos_y FROM stg_pp_user").df()
 
 users_c = (
    alt.Chart(users_df)
@@ -30,7 +30,7 @@ users_c = (
    .encode(x="pos_x", y="pos_y", size="balance", tooltip=["user_id", "balance"])
 )
 
-proposals_df = con.sql("SELECT proposal_id, title, ((ROW_NUMBER() OVER (ORDER BY proposal_id)) * 15) AS pos_x, 0 as pos_y FROM silver_proposal").df()
+proposals_df = con.sql("SELECT proposal_id, title, ((ROW_NUMBER() OVER (ORDER BY proposal_id)) * 15) AS pos_x, 0 as pos_y FROM stg_pp_proposal").df()
 
 proposals_c = (
    alt.Chart(proposals_df)

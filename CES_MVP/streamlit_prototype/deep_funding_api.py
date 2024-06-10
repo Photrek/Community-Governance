@@ -15,7 +15,7 @@ url = os.getenv('VOTING_PORTAL_HOST')
 con = cesdb.get_db_connection()
 
 def load_proposals(progress_updater: Callable[[int, int], None]) -> None:
-    rounds = con.sql("SELECT id FROM silver_rounds").fetchall()
+    rounds = con.sql("SELECT id FROM stg_pp_rounds").fetchall()
     round_ids = [row[0] for row in rounds]
 
     proposals = []
@@ -26,7 +26,7 @@ def load_proposals(progress_updater: Callable[[int, int], None]) -> None:
 
     __save_to_json(proposals, 'data/proposals.json')
 
-    models.load(con, 'models/silver_proposals.sql')
+    models.load(con, 'models/staging/proposal_portal/stg_pp_proposals.sql')
 
 def __download_proposals(round_id):
     response = requests.get(f"{url}/rounds/{round_id}/proposals")
@@ -65,8 +65,8 @@ def load_rounds_and_pools_connection() -> None:
     __save_to_json(rounds, 'data/rounds.json')
     __save_to_json(rounds_pools, 'data/rounds_pools.json')
 
-    models.load(con, 'models/silver_rounds.sql')
-    models.load(con, 'models/silver_rounds_pools.sql')
+    models.load(con, 'models/staging/proposal_portal/stg_pp_rounds.sql')
+    models.load(con, 'models/staging/proposal_portal/stg_pp_rounds_pools.sql')
 
 def __fetch_rounds_pools():
     response = requests.get(f"{url}/rounds")
@@ -98,7 +98,7 @@ def load_pools() -> None:
 
     __save_to_json(raw_data, 'data/pools.json')
 
-    models.load(con, 'models/silver_pools.sql')
+    models.load(con, 'models/staging/proposal_portal/stg_pp_pools.sql')
 
 def fetch_pages(endpoint_path: str, selector: str):
     page = 1
@@ -138,7 +138,7 @@ def __batch_load(endpoint_path: str,
     __save_to_json(all_data, f'data/{model_name}.json')
 
     print(f"Loading model: {model_name}")
-    models.load(con, f'models/silver_{model_name}.sql')
+    models.load(con, f'models/staging/proposal_portal/stg_pp_{model_name}.sql')
 
 def __save_to_json(data, path):
     print(f"Saving data to {path}")

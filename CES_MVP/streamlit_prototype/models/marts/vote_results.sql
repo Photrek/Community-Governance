@@ -16,11 +16,11 @@ SELECT
         NULLIF(SUM(CASE WHEN r.grade <> 'skip' THEN sqrt(r.total_balance) END), 0), 
     0) AS avg_grade
 FROM 
-    -- silver_proposals AS p
-    bronze_questions AS p
+    -- stg_pp_proposals AS p
+    stg_vp_questions AS p
 LEFT JOIN 
-    -- silver_rating AS r
-    bronze_answers AS r
+    -- stg_vp_rating AS r
+    stg_vp_answers AS r
 -- ON p.proposal_id = r.proposal_id
 ON p.question_id = r.question_id
 GROUP BY 
