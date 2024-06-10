@@ -62,7 +62,6 @@ with tab1:
             src = e[0]
             dst = e[1]
             w = e[2] * 5
-            print(f"src: {src}, dst: {dst}, w: {w}")
 
             net.add_node(src, src, title=f"user_{src}", color='blue')
             net.add_node(dst, dst, title=f"proposal_{dst}", color='red')
