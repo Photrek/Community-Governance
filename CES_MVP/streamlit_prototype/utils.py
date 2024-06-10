@@ -58,7 +58,7 @@ def mandatory_tables_loaded():
         # expect excel import
         "stg_vp_questions",
         # "stg_pp_wallet_links",
-        # "stg_vp_answers",
+        # "stg_vp_ratings",
     ]
     loaded_tables = con.execute("SHOW ALL TABLES;").fetchall()
     loaded_tables = [table[2] for table in loaded_tables]

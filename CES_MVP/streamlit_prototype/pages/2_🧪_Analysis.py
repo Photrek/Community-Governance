@@ -52,7 +52,7 @@ SELECT
 FROM 
     stg_vp_questions AS p
 LEFT JOIN 
-    stg_vp_answers AS r
+    stg_vp_ratings AS r
 ON p.question_id = r.question_id
 
 -- can be added once the mapping between question_id and proposal_id is clear
@@ -97,7 +97,7 @@ select
         / (LOG2(11) * (SELECT total_users FROM max_votes) )
     ) total_entropy,
 from
-    stg_vp_answers as r
+    stg_vp_ratings as r
 join entropy as e on
     r.collection_id = e.collection_id
 group by

@@ -31,7 +31,7 @@ def manual_voting_xlsx_upload():
         con.execute("INSTALL spatial;")
         con.execute("LOAD spatial;")
 
-        models.load(con, 'models/staging/voting_portal/stg_vp_answers.sql')
+        models.load(con, 'models/staging/voting_portal/stg_vp_ratings.sql')
         models.load(con, 'models/staging/voting_portal/stg_vp_collections.sql')
         models.load(con, 'models/staging/voting_portal/stg_vp_collection_balances.sql')
         models.load(con, 'models/staging/voting_portal/stg_vp_questions.sql')
@@ -82,7 +82,7 @@ if st.button("Fetch from API"):
     
     deep_funding_api.load_comment_votes(progress_updater=__progress_updater("Fetching comment votes from voting portal. Please wait."))
 
-    if utils.table_exists("stg_vp_answers"):
+    if utils.table_exists("stg_vp_ratings"):
         models.marts_transformations(con, 'models')
 
     """

@@ -34,7 +34,7 @@ with tab1:
             r.question_id,
             e.entropy,
         FROM
-            stg_vp_answers as r
+            stg_vp_ratings as r
         JOIN entropy as e ON
             r.collection_id = e.collection_id
         WHERE
@@ -123,7 +123,7 @@ with tab2:
         r.question_id,
         e.entropy,
     FROM
-        stg_vp_answers as r
+        stg_vp_ratings as r
     JOIN entropy as e ON
         r.collection_id = e.collection_id,
     """
@@ -180,7 +180,7 @@ with tab3:
         r.question_id,
         e.entropy,
     FROM
-        stg_vp_answers as r
+        stg_vp_ratings as r
     JOIN entropy as e ON
         r.collection_id = e.collection_id,
     """
