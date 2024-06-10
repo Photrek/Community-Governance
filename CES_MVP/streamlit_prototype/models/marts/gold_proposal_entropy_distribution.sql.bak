@@ -1,0 +1,74 @@
+select
+    r.proposal_id,
+    count(*),
+    SUM(e.entropy),
+    -- SUM(e.entropy) / LOG2(11) as entropy,
+from 
+    silver_rating as r
+join entropy as e on
+    r.user_id = e.user_id
+where
+    r.proposal_id = 1
+    OR r.proposal_id = 2
+group by
+    r.proposal_id;
+
+-- 
+select 
+    r.user_id,
+    e.entropy,
+    count(r.*),
+from
+    silver_rating as r
+join entropy as e on
+    r.user_id = e.user_id
+where
+    r.grade <> 'skip'
+    -- or proposal_id = 2
+group by
+    1,2
+order by
+    e.entropy desc;
+
+
+-- select
+--     *
+-- from
+--     silver_rating
+-- where
+--     proposal_id = 1;
+
+with max_votes as (
+    select
+        count(*) as total_users
+    from
+        silver_user
+)
+
+select 
+    r.proposal_id,
+    (
+        SUM(CASE WHEN r.grade <> 'skip' THEN r.grade::int * e.entropy END)
+        / (LOG2(11) * (SELECT total_users FROM max_votes) )
+    ) total_entropy,
+from
+    silver_rating as r
+join entropy as e on
+    r.user_id = e.user_id
+group by
+    1
+order by total_entropy desc
+
+
+-- max vote
+select 
+    r.proposal_id,
+    max(e.entropy)
+    -- e.entropy,
+from
+    silver_rating as r
+join entropy as e on
+    r.user_id = e.user_id
+group by
+    1
+

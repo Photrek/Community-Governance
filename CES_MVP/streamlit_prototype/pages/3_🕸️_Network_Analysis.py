@@ -34,8 +34,8 @@ with tab1:
             r.question_id,
             e.entropy,
         FROM
-            silver_ratings as r
-        JOIN gold_entropy as e ON
+            stg_vp_answers as r
+        JOIN entropy as e ON
             r.collection_id = e.collection_id
         WHERE
             r.question_id = {proposal_id}
@@ -87,7 +87,7 @@ with tab2:
 
     net.toggle_physics(False)
 
-    users = con.sql("SELECT collection_id FROM bronze_collections").fetchall()
+    users = con.sql("SELECT collection_id FROM stg_vp_collections").fetchall()
     n_half = len(users) // 2
     for i, row in enumerate(users):
         id = f"user_{row[0]}"
@@ -102,7 +102,7 @@ with tab2:
             color='blue'
         )
 
-    proposals = con.sql("SELECT question_id FROM bronze_questions").fetchall()
+    proposals = con.sql("SELECT question_id FROM stg_vp_questions").fetchall()
     n_half = len(proposals) // 2
     for i, row in enumerate(proposals):
         id = f"proposal_{row[0]}"
@@ -123,8 +123,8 @@ with tab2:
         r.question_id,
         e.entropy,
     FROM
-        silver_ratings as r
-    JOIN gold_entropy as e ON
+        stg_vp_answers as r
+    JOIN entropy as e ON
         r.collection_id = e.collection_id,
     """
 
@@ -142,7 +142,7 @@ with tab2:
             width=entropy
         )
 
-    proposals = con.sql("SELECT question_id FROM bronze_questions").fetchall()
+    proposals = con.sql("SELECT question_id FROM stg_vp_questions").fetchall()
     n_half_proposals = len(proposals) // 2
 
     net.show('network_html_files/network.html')
@@ -156,7 +156,7 @@ with tab3:
 
     "## Relation between proposal creator and proposals"
 
-    users = con.sql("SELECT collection_id FROM bronze_collections").fetchall()
+    users = con.sql("SELECT collection_id FROM stg_vp_collections").fetchall()
     n_half = len(users) // 2
     for i, row in enumerate(users):
         id = f"user_{row[0]}"
@@ -165,7 +165,7 @@ with tab3:
 
         g.add_node(id, x=x, y=y, color='blue')
 
-    proposals = con.sql("SELECT question_id FROM bronze_questions").fetchall()
+    proposals = con.sql("SELECT question_id FROM stg_vp_questions").fetchall()
     n_half = len(proposals) // 2
     for i, row in enumerate(proposals):
         id = f"proposal_{row[0]}"
@@ -180,8 +180,8 @@ with tab3:
         r.question_id,
         e.entropy,
     FROM
-        silver_ratings as r
-    JOIN gold_entropy as e ON
+        stg_vp_answers as r
+    JOIN entropy as e ON
         r.collection_id = e.collection_id,
     """
 
@@ -212,10 +212,10 @@ with tab3:
 
     users = con.sql(f"""
                     SELECT user_id
-                    FROM silver_users
+                    FROM stg_pp_users
                     WHERE user_id IN (
                         SELECT user_id
-                        FROM silver_proposals
+                        FROM stg_pp_proposals
                         WHERE round_id = {round_id}
                     )
                     """).fetchall()
@@ -227,7 +227,7 @@ with tab3:
 
         g.add_node(id, x=x, y=y, color='blue')
 
-    proposals = con.sql(f"SELECT id FROM silver_proposals where round_id = {round_id}").fetchall()
+    proposals = con.sql(f"SELECT id FROM stg_pp_proposals where round_id = {round_id}").fetchall()
     n_half = len(proposals) // 2
     for i, row in enumerate(proposals):
         id = f"proposal_{row[0]}"
@@ -242,8 +242,8 @@ with tab3:
     #     r.proposal_id,
     #     e.entropy,
     # FROM
-    #     silver_rating as r
-    # JOIN gold_entropy as e ON
+    #     stg_vp_rating as r
+    # JOIN entropy as e ON
     #     r.user_id = e.user_id,
     # """
 

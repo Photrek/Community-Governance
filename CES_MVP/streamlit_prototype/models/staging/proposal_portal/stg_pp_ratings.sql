@@ -7,4 +7,4 @@ SELECT
     grade::VARCHAR AS grade,
     total_balance::DOUBLE AS total_balance
 FROM 
-    bronze_answers
+    stg_vp_answers

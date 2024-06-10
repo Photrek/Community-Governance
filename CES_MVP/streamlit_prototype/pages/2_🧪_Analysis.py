@@ -50,9 +50,9 @@ SELECT
         {algorithm}
     0) AS avg_grade
 FROM 
-    bronze_questions AS p
+    stg_vp_questions AS p
 LEFT JOIN 
-    bronze_answers AS r
+    stg_vp_answers AS r
 ON p.question_id = r.question_id
 
 -- can be added once the mapping between question_id and proposal_id is clear
@@ -73,7 +73,7 @@ st.bar_chart(data=vote_results, x='proposal_id', y='avg_grade')
 Voting Entropy
 """
 
-voting_entropy = con.sql("SELECT * FROM gold_entropy").df()
+voting_entropy = con.sql("SELECT * FROM entropy").df()
 voting_entropy
 
 st.bar_chart(data=voting_entropy, x='collection_id', y='entropy')
@@ -84,8 +84,8 @@ with max_votes as (
     select
         count(*) as total_users
     from
-        --silver_user
-        bronze_collections
+        --stg_pp_user
+        stg_vp_collections
 )
 
 select 
@@ -97,8 +97,8 @@ select
         / (LOG2(11) * (SELECT total_users FROM max_votes) )
     ) total_entropy,
 from
-    silver_ratings as r
-join gold_entropy as e on
+    stg_vp_answers as r
+join entropy as e on
     r.collection_id = e.collection_id
 group by
     1

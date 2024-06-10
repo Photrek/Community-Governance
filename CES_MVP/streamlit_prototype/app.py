@@ -31,20 +31,14 @@ def manual_voting_xlsx_upload():
         con.execute("INSTALL spatial;")
         con.execute("LOAD spatial;")
 
-        models.load(con, 'models/bronze_answers.sql')
-        models.load(con, 'models/bronze_collections.sql')
-        models.load(con, 'models/bronze_collection_balances.sql')
-        models.load(con, 'models/bronze_questions.sql')
-
-        # build dependent models
-        models.load(con, 'models/silver_ratings.sql')
+        models.load(con, 'models/staging/voting_portal/stg_vp_answers.sql')
+        models.load(con, 'models/staging/voting_portal/stg_vp_collections.sql')
+        models.load(con, 'models/staging/voting_portal/stg_vp_collection_balances.sql')
+        models.load(con, 'models/staging/voting_portal/stg_vp_questions.sql')
 
         """
         🎉 Voting data successfully loaded
         """
-
-def perform_gold_transformations():
-    models.gold_transformations(con, 'models')
 
 # Page content starts here
 
@@ -52,7 +46,7 @@ def perform_gold_transformations():
 # Data Management
 Load the data into the local database and prepare it for analysis.
 
-## Voting Data (excel file)
+## Voting Portal - Data (excel file)
 Make sure the excel file provides the following sheets (case-sensitive):
 - Answers
 - Collections
@@ -62,7 +56,7 @@ Make sure the excel file provides the following sheets (case-sensitive):
 
 manual_voting_xlsx_upload()
 
-"## Proposal Portal Data (API)"
+"## Proposal Portal - Data (API)"
 
 if st.button("Fetch from API"):
     
@@ -88,8 +82,8 @@ if st.button("Fetch from API"):
     
     deep_funding_api.load_comment_votes(progress_updater=__progress_updater("Fetching comment votes from voting portal. Please wait."))
 
-    if utils.table_exists("silver_ratings"):
-        perform_gold_transformations()
+    if utils.table_exists("stg_vp_answers"):
+        models.marts_transformations(con, 'models')
 
     """
     Data successfully loaded

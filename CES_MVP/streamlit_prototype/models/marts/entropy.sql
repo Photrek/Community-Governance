@@ -3,7 +3,7 @@ with total_votes as (
         collection_id,
         count(*) as total_votes
     from
-        silver_ratings
+        stg_vp_answers
     group by
         collection_id
 ),
@@ -17,7 +17,7 @@ probabilities as (
             * LOG2(count(grade) / v.total_votes)
         ) as propability,
     from
-        silver_ratings as r
+        stg_vp_answers as r
     join total_votes as v on
         r.collection_id = v.collection_id
     group by

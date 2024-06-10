@@ -9,6 +9,9 @@
     </p>
 </div>
 
+# Project Structure
+* The model structure is inspired by dbt's [How we structure our dbt projects](https://docs.getdbt.com/best-practices/how-we-structure/1-guide-overview) article.
+
 # Data Model
 Data model using [Crow's_foot_notation](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model#Crow's_foot_notation)
 ```mermaid

@@ -6,7 +6,7 @@ import streamlit as st
 con = cesdb.get_db_connection()
 
 def round_selector():
-    rounds_raw = con.sql("SELECT id, name FROM silver_rounds").fetchall()
+    rounds_raw = con.sql("SELECT id, name FROM stg_pp_rounds").fetchall()
     rounds = [(row[0], row[1]) for row in rounds_raw]
 
     option = st.selectbox(
@@ -25,7 +25,7 @@ def round_selector():
     return option
 
 def proposal_selector():
-    proposals_raw = con.sql("SELECT question_id, question FROM bronze_questions").fetchall()
+    proposals_raw = con.sql("SELECT question_id, question FROM stg_vp_questions").fetchall()
     proposals = [(row[0], f"{row[0]} {row[1]}") for row in proposals_raw]
 
     option = st.selectbox(
@@ -45,20 +45,20 @@ def proposal_selector():
 
 def mandatory_tables_loaded():
     mandatory_tables = [
-        "silver_comment_votes",
-        "silver_proposals",
-        "silver_rounds_pools",
-        "silver_comments",
-        "silver_users",
-        "silver_milestones",
-        "silver_reviews",
-        "silver_pools",
-        "silver_rounds",
+        "stg_pp_comment_votes",
+        "stg_pp_proposals",
+        "stg_pp_rounds_pools",
+        "stg_pp_comments",
+        "stg_pp_users",
+        "stg_pp_milestones",
+        "stg_pp_reviews",
+        "stg_pp_pools",
+        "stg_pp_rounds",
 
         # expect excel import
-        "bronze_questions",
-        # "silver_wallet_links",
-        # "silver_ratings",
+        "stg_vp_questions",
+        # "stg_pp_wallet_links",
+        # "stg_vp_answers",
     ]
     loaded_tables = con.execute("SHOW ALL TABLES;").fetchall()
     loaded_tables = [table[2] for table in loaded_tables]
