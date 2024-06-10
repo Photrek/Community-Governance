@@ -24,6 +24,25 @@ def round_selector():
 
     return option
 
+def proposal_selector():
+    proposals_raw = con.sql("SELECT question_id, question FROM bronze_questions").fetchall()
+    proposals = [(row[0], f"{row[0]} {row[1]}") for row in proposals_raw]
+
+    option = st.selectbox(
+        "Which proposal do you want to evaluate?", 
+        proposals,
+        format_func=lambda x: x[1],
+        index=None,
+        placeholder="Select proposal...",
+    )
+
+    if option is None:
+        option = (None, None)
+
+    f"You selected: {option[1]}"
+
+    return option
+
 def mandatory_tables_loaded():
     mandatory_tables = [
         "silver_comment_votes",
