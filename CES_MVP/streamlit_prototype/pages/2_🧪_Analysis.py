@@ -26,8 +26,8 @@ algorithm = ""
 if option == 'one_user_one_vote_weighted_sqrt':
     algorithm = """
         -- remove skipped votes
-        SUM(CASE WHEN r.grade <> 'skip' THEN sqrt(r.total_balance) * CAST(r.grade AS INTEGER) END) / 
-        NULLIF(SUM(CASE WHEN r.grade <> 'skip' THEN sqrt(r.total_balance) END), 0),
+        SUM(CASE WHEN r.grade <> 'skip' THEN sqrt(r.balance) * CAST(r.grade AS INTEGER) END) / 
+        NULLIF(SUM(CASE WHEN r.grade <> 'skip' THEN sqrt(r.balance) END), 0),
     """
 else:
     algorithm = """
@@ -38,8 +38,8 @@ else:
 
 query = f"""
 SELECT
-    p.question_id as proposal_id,
-    p.question,
+    p.id,
+    p.title,
     COUNT(CASE WHEN r.grade <> 'skip' THEN 1 END) AS num_votes,
 
     -- need the skipped answers to calculate % of people that voted
@@ -50,27 +50,27 @@ SELECT
         {algorithm}
     0) AS avg_grade
 FROM 
-    stg_vp_questions AS p
+    proposals AS p
 LEFT JOIN 
-    stg_vp_ratings AS r
-ON p.question_id = r.question_id
+    int_ratings AS r
+ON p.id = r.proposal_id
 
 -- can be added once the mapping between question_id and proposal_id is clear
--- WHERE p.round_id = {round_id}
+WHERE p.round_id = {round_id}
 
 GROUP BY 
-    p.question_id, 
-    p.question
+    p.id, 
+    p.title
 """
 
 vote_results = con.sql(query).df()
 vote_results
 
-st.bar_chart(data=vote_results, x='proposal_id', y='avg_grade')
+st.bar_chart(data=vote_results, x='id', y='avg_grade')
 
 
 """
-Voting Entropy
+# Voting Entropy
 """
 
 voting_entropy = con.sql("SELECT * FROM entropy").df()
@@ -89,15 +89,14 @@ with max_votes as (
 )
 
 select 
-    -- r.proposal_id,
-    r.question_id,
+    r.proposal_id,
                          
     (
         SUM(CASE WHEN r.grade <> 'skip' THEN r.grade::int * e.entropy END)
         / (LOG2(11) * (SELECT total_users FROM max_votes) )
     ) total_entropy,
 from
-    stg_vp_ratings as r
+    int_ratings as r
 join entropy as e on
     r.collection_id = e.collection_id
 group by
@@ -106,4 +105,4 @@ order by total_entropy desc
 """).df()
 voting_entropy
 
-st.bar_chart(data=voting_entropy, x='question_id', y='total_entropy')
+st.bar_chart(data=voting_entropy, x='proposal_id', y='total_entropy')
