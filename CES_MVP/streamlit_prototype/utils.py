@@ -20,12 +20,12 @@ def round_selector():
     if not option:
         st.stop()
 
-    f"You selected: {option[1]}"
+    st.write(f"You selected: {option[1]}")
 
     return option
 
 def proposal_selector():
-    proposals_raw = con.sql("SELECT question_id, question FROM stg_vp_questions").fetchall()
+    proposals_raw = con.sql("SELECT id, title FROM proposals").fetchall()
     proposals = [(row[0], f"{row[0]} {row[1]}") for row in proposals_raw]
 
     option = st.selectbox(
@@ -39,7 +39,7 @@ def proposal_selector():
     if option is None:
         option = (None, None)
 
-    f"You selected: {option[1]}"
+    st.write(f"You selected: {option[1]}")
 
     return option
 

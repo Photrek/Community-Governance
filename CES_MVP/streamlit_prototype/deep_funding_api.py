@@ -14,17 +14,18 @@ url = os.getenv('VOTING_PORTAL_HOST')
 
 con = cesdb.get_db_connection()
 
-def load_proposals(progress_updater: Callable[[int, int], None]) -> None:
-    rounds = con.sql("SELECT id FROM stg_pp_rounds").fetchall()
-    round_ids = [row[0] for row in rounds]
+def load_proposals(refetch: bool, progress_updater: Callable[[int, int], None]) -> None:
+    if refetch:
+        rounds = con.sql("SELECT id FROM stg_pp_rounds").fetchall()
+        round_ids = [row[0] for row in rounds]
 
-    proposals = []
-    for idx, round in enumerate(round_ids, start=1):
-        response = __download_proposals(round_id=round)
-        proposals.extend(response)
-        progress_updater(idx, len(round_ids))
+        proposals = []
+        for idx, round in enumerate(round_ids, start=1):
+            response = __download_proposals(round_id=round)
+            proposals.extend(response)
+            progress_updater(idx, len(round_ids))
 
-    __save_to_json(proposals, 'data/proposals.json')
+        __save_to_json(proposals, 'data/proposals.json')
 
     models.load(con, 'models/staging/proposal_portal/stg_pp_proposals.sql')
 
@@ -50,20 +51,21 @@ def __download_proposals(round_id):
         })
     return proposals
 
-def load_reviews(progress_updater: Callable[[int, int], None]) -> None:
-    __batch_load('reviews', 'reviews', progress_updater)
+def load_reviews(refetch: bool, progress_updater: Callable[[int, int], None]) -> None:
+    __batch_load('reviews', 'reviews', progress_updater, refetch=refetch)
 
-def load_comment_votes(progress_updater: Callable[[int, int], None]) -> None:
-    __batch_load('comment_votes', 'votes', progress_updater, model_name='comment_votes')
+def load_comment_votes(refetch: bool, progress_updater: Callable[[int, int], None]) -> None:
+    __batch_load('comment_votes', 'votes', progress_updater, model_name='comment_votes', refetch=refetch)
 
-def load_milestones(progress_updater: Callable[[int, int], None]) -> None:
-    __batch_load('milestones', 'milestones', progress_updater)
+def load_milestones(refetch: bool, progress_updater: Callable[[int, int], None]) -> None:
+    __batch_load('milestones', 'milestones', progress_updater, refetch=refetch)
 
-def load_rounds_and_pools_connection() -> None:
-    rounds, rounds_pools = __fetch_rounds_pools()
-    
-    __save_to_json(rounds, 'data/rounds.json')
-    __save_to_json(rounds_pools, 'data/rounds_pools.json')
+def load_rounds_and_pools_connection(refetch: bool) -> None:
+    if refetch:
+        rounds, rounds_pools = __fetch_rounds_pools()
+        
+        __save_to_json(rounds, 'data/rounds.json')
+        __save_to_json(rounds_pools, 'data/rounds_pools.json')
 
     models.load(con, 'models/staging/proposal_portal/stg_pp_rounds.sql')
     models.load(con, 'models/staging/proposal_portal/stg_pp_rounds_pools.sql')
@@ -91,12 +93,13 @@ def __fetch_rounds_pools():
             
     return rounds,rounds_pools
 
-def load_pools() -> None:
-    # download the voting portal data
-    response = requests.get(f"{url}/pools")
-    raw_data = response.json()  # Convert response to JSON format
+def load_pools(refetch: bool) -> None:
+    if refetch:
+        # download the voting portal data
+        response = requests.get(f"{url}/pools")
+        raw_data = response.json()  # Convert response to JSON format
 
-    __save_to_json(raw_data, 'data/pools.json')
+        __save_to_json(raw_data, 'data/pools.json')
 
     models.load(con, 'models/staging/proposal_portal/stg_pp_pools.sql')
 
@@ -117,25 +120,27 @@ def fetch_pages(endpoint_path: str, selector: str):
         page = data['pagination']['next_page']
 
 
-def load_users(progress_updater: Callable[[int, int], None]) -> None:
-    __batch_load('users', 'users', progress_updater)
+def load_users(refetch: bool, progress_updater: Callable[[int, int], None]) -> None:
+    __batch_load('users', 'users', progress_updater, refetch=refetch)
 
-def load_comments(progress_updater: Callable[[int, int], None]) -> None:
-    __batch_load('comments', 'comments', progress_updater)
+def load_comments(refetch: bool, progress_updater: Callable[[int, int], None]) -> None:
+    __batch_load('comments', 'comments', progress_updater, refetch=refetch)
 
 def __batch_load(endpoint_path: str, 
                  selector: str,
                  progress_updater: Callable[[int, int], None],
-                 model_name: str = None) -> None:
+                 model_name: str = None,
+                 refetch: bool = True) -> None:
     if model_name is None:
         model_name = selector
 
-    all_data = []
-    for page_number, (page_data, total_pages) in enumerate(fetch_pages(endpoint_path, selector), start=1):
-        all_data.extend(page_data)
-        progress_updater(page_number, total_pages)
+    if refetch:
+        all_data = []
+        for page_number, (page_data, total_pages) in enumerate(fetch_pages(endpoint_path, selector), start=1):
+            all_data.extend(page_data)
+            progress_updater(page_number, total_pages)
 
-    __save_to_json(all_data, f'data/{model_name}.json')
+        __save_to_json(all_data, f'data/{model_name}.json')
 
     print(f"Loading model: {model_name}")
     models.load(con, f'models/staging/proposal_portal/stg_pp_{model_name}.sql')
