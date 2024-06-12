@@ -1,0 +1,4 @@
+streamlit
+duckdb==1.0.0
+gravis
+pyvis
