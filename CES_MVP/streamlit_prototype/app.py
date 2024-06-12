@@ -116,6 +116,13 @@ if st.button("Fetch from API"):
         models.load(con, 'models/marts/entropy.sql')
         models.load(con, 'models/marts/vote_results.sql')
 
+        # current voting algorithm
+        models.load(con, 'models/intermediate/int_user_contribution_engagement_score.sql')
+        models.load(con, 'models/intermediate/int_reputation_voting_weight.sql')
+        models.load(con, 'models/intermediate/int_agix_reward.sql')
+
+        models.load(con, 'models/marts/voting_weight.sql')
+
     """
     Data successfully loaded
     """
