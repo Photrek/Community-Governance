@@ -148,3 +148,8 @@ if st.button("Fetch from API"):
     """
     Data successfully loaded
     """
+
+if not utils.mandatory_tables_loaded():
+    utils.hide_sidebar(True)
+else:
+    utils.hide_sidebar(False)
