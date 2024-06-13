@@ -36,4 +36,4 @@ HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
 ENV VOTING_PORTAL_HOST=https://deepfunding.ai/wp-json/deepfunding/v1
 
-ENTRYPOINT ["streamlit", "run", "App.py", "--server.port=8501", "--server.address=0.0.0.0"]
+ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
