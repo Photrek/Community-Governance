@@ -20,7 +20,7 @@ def __progress_updater(progress_text: str) -> Callable[[int, int], None]:
     progress_bar = st.progress(0, text=progress_text)
     return lambda page, total_pages: progress_bar.progress(page / total_pages, text=progress_text)
     
-def manual_voting_xlsx_upload():
+def manual_voting_xlsx_upload() -> bool:
     raw_file = st.file_uploader("Provide the voting data excel file:", accept_multiple_files=False)
     if raw_file is not None:
 
@@ -39,8 +39,28 @@ def manual_voting_xlsx_upload():
         """
         🎉 Voting data successfully loaded
         """
+        return True
+    else:
+        return False
 
 # Page content starts here
+
+"## Danger Zone"
+
+if st.button("Reset local database", type="primary"):
+    con.execute("USE demo;")
+    con.execute("DROP SCHEMA db CASCADE;")
+    con.execute("CREATE SCHEMA IF NOT EXISTS db;")
+    con.execute("USE db;")
+    """
+    Database successfully reset
+    """
+
+if not utils.mandatory_tables_loaded():
+    utils.hide_sidebar(True)
+    st.stop()
+else:
+    utils.hide_sidebar(False)
 
 """
 # Data Management
@@ -54,7 +74,10 @@ Make sure the excel file provides the following sheets (case-sensitive):
 - Questions
 """
 
-manual_voting_xlsx_upload()
+voting_portal_loaded = manual_voting_xlsx_upload()
+
+if not voting_portal_loaded:
+    st.stop()
 
 "## Proposal Portal - Data (API)"
 
@@ -126,20 +149,3 @@ if st.button("Fetch from API"):
     """
     Data successfully loaded
     """
-
-"## Danger Zone"
-
-if st.button("Reset local database", type="primary"):
-    con.execute("USE demo;")
-    con.execute("DROP SCHEMA db CASCADE;")
-    con.execute("CREATE SCHEMA IF NOT EXISTS db;")
-    con.execute("USE db;")
-    """
-    Database successfully reset
-    """
-
-if not utils.mandatory_tables_loaded():
-    utils.hide_sidebar(True)
-    st.stop()
-else:
-    utils.hide_sidebar(False)

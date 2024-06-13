@@ -1,10 +1,17 @@
 import duckdb
+import os
 
 import streamlit as st
 
 
 @st.cache_resource
 def get_db_connection() -> duckdb.DuckDBPyConnection:
+
+    # if running in Docker container, remove existing database
+    if os.path.exists('demo.db') and os.getenv('DOCKER') == 'true':
+        print("Removing existing database")
+        os.remove('demo.db')
+
     print("get_db_connection")
     con = duckdb.connect(database='demo.db')
     # models.load_all(con, 'models')
