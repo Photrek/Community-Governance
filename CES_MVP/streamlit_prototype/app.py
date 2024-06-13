@@ -58,7 +58,6 @@ if st.button("Reset local database", type="primary"):
 
 if not utils.mandatory_tables_loaded():
     utils.hide_sidebar(True)
-    st.stop()
 else:
     utils.hide_sidebar(False)
 
