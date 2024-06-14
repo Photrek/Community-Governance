@@ -1,7 +1,12 @@
 select
     r.collection_id,
     m.pp_proposal_id as proposal_id,
-    r.grade,
+
+    case
+        when r.grade = 'skip' then 0
+        else cast(r.grade as int)
+    end as grade,
+    
     r.total_balance as balance
 from
     stg_vp_ratings as r

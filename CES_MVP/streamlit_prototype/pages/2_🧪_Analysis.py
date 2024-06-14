@@ -6,6 +6,98 @@ import streamlit as st
 
 con = cesdb.get_db_connection()
 
+# enable streamlit wide mode
+
+
+"# Deep Funding Round 4 Analysis"
+
+"""
+## Engagement Score
+
+The engagement score per user is calculated as follows:
+
+| Event         | Weight |
+|---------------|--------|
+| comment count |      3 |
+| upvote count  |      2 |
+| downvote count|     -3 |
+"""
+
+st.latex(r"""
+         \text{Engagement Score} = 3 \times \text{comment count} + 2 \times \text{upvote count} - 3 \times \text{downvote count}
+         """)
+
+engagement_score = con.sql("select * from int_engagement_score").df()
+st.dataframe(engagement_score, hide_index=True)
+
+
+"""
+## Reputation Weights
+
+The reputation weight is a logarithmic scale that distributes the user engagement score between 1-5.
+"""
+st.latex(r"""
+         \text{Reputation weight} = 1 + (4 \log\left(\frac{\text{engagement score}}{\text{min engagement score}}\right) / \log\left(\frac{\text{max engagement score}}{\text{min engagement score}}\right))
+         """)
+
+reputation_weight = con.sql("select * from int_reputation_weight").df()
+st.dataframe(
+    reputation_weight,
+    hide_index=True,
+    column_config={
+            "proposal_id": st.column_config.NumberColumn(
+                "proposal_id",
+                format="%d",
+            )
+        }    
+    )
+
+"""
+## Voting Weights
+"""
+st.latex(r"""
+         \text{total voting weight} = \sqrt{\text{balance} / 100000000} \times \text{reputation weight}
+         """)
+
+voting_weights = con.sql("select * from voting_weights order by total_voting_weight desc").df()
+st.dataframe(
+    voting_weights,
+    hide_index=True,
+    column_config={
+            "proposal_id": st.column_config.NumberColumn(
+                "proposal_id",
+                format="%d",
+            )
+        }
+    )
+
+"""
+## Voting Results
+
+The voting results are calculated as follows:
+"""
+
+st.latex(r"""
+eligable = \begin{cases}
+   true &\text{if } \text{average\_grade} > 6.5 \text{ and } \text{percent\_of\_people\_voted} > 1.0 \\
+   false &\text{otherwise}
+\end{cases}
+""")
+
+voting_results = con.sql("select * from dfr4_voting_results").df()
+st.dataframe(
+    voting_results,
+    hide_index=True,
+    column_config={
+            "proposal_id": st.column_config.NumberColumn(
+                "proposal_id",
+                format="%d",
+            )
+        }
+    )
+
+st.stop()
+
 """
 # 🧪 User Engagement Analysis
 """

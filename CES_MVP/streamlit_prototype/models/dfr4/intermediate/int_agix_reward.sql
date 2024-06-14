@@ -16,7 +16,7 @@ total_agix_reward as (
     left join agix_distribution as ad
         on r.collection_id = ad.collection_id
     where
-        r.grade <> 'skip'
+        r.grade <> 0
     group by
         r.proposal_id
 )
@@ -36,5 +36,5 @@ left join agix_distribution as ad
 left join total_agix_reward as tar
     on r.proposal_id = tar.proposal_id
 where
-    r.grade <> 'skip'
+    r.grade <> 0
 ;

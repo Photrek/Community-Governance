@@ -120,12 +120,20 @@ if voting_portal_loaded:
             models.load(con, 'models/marts/entropy.sql')
             models.load(con, 'models/marts/vote_results.sql')
 
-            # current voting algorithm
-            models.load(con, 'models/intermediate/int_user_contribution_engagement_score.sql')
-            models.load(con, 'models/intermediate/int_reputation_voting_weight.sql')
-            models.load(con, 'models/intermediate/int_agix_reward.sql')
+        # current voting algorithm
 
-            models.load(con, 'models/marts/voting_weight.sql')
+        ## int_engagement_score
+        models.load(con, 'models/dfr4/intermediate/int_comment_counts.sql')
+        models.load(con, 'models/dfr4/intermediate/int_comment_votes.sql')
+        models.load(con, 'models/dfr4/intermediate/int_engagement_score.sql')
+
+        ## int_reputation_weight
+        models.load(con, 'models/dfr4/intermediate/int_total_voting_weight.sql')
+        models.load(con, 'models/dfr4/intermediate/int_min_max_engagement_score_per_proposal.sql')
+        models.load(con, 'models/dfr4/intermediate/int_reputation_weight.sql')
+
+        models.load(con, 'models/dfr4/marts/voting_weights.sql')
+        models.load(con, 'models/dfr4/marts/dfr4_voting_results.sql')
 
         """
         Data successfully loaded
