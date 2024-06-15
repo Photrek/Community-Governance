@@ -6,6 +6,14 @@ import deep_funding_api
 import streamlit as st
 from typing import Callable, List
 
+import streamlit as st
+
+
+def wide_space_default():
+    st.set_page_config(layout="wide")
+
+wide_space_default()
+
 
 #
 # Helper functions
