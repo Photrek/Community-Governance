@@ -1,0 +1,26 @@
+with raw_agix_balance_snapshot as (
+    SELECT
+        id::BIGINT AS id,
+        network::VARCHAR AS network,
+        address::VARCHAR AS address,
+        balance::BIGINT AS balance,
+        
+        created_on::DATETIME AS created_on,
+        updated_on::DATETIME AS updated_on,
+    FROM 
+        read_csv('data/agix_balance_snapshot.csv')
+)
+
+SELECT
+    id,
+    network,
+    address,
+    balance,
+    created_on,
+    updated_on,
+FROM
+    raw_agix_balance_snapshot
+WHERE
+    id IS NOT NULL
+    AND address IS NOT NULL
+;

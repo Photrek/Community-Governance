@@ -1,6 +1,7 @@
 import cesdb
 
 import streamlit as st
+from typing import List
 
 
 con = cesdb.get_db_connection()
@@ -45,23 +46,29 @@ def proposal_selector():
 
 def mandatory_tables_loaded():
     mandatory_tables = [
+        # proposal portal tables
         "stg_pp_comment_votes",
-        "stg_pp_proposals",
-        "stg_pp_rounds_pools",
         "stg_pp_comments",
-        "stg_pp_users",
         "stg_pp_milestones",
-        "stg_pp_reviews",
         "stg_pp_pools",
+        "stg_pp_proposals",
+        "stg_pp_reviews",
         "stg_pp_rounds",
+        "stg_pp_rounds_pools",
+        "stg_pp_users",
 
-        # expect excel import
-        "stg_vp_questions",
-        # "stg_pp_wallet_links",
-        # "stg_vp_ratings",
+        # voting portal tables
+        "stg_vp_agix_balance_snapshot",
+        "stg_vp_voting_answers",
+        "stg_vp_voting_questions",
+        "stg_vp_wallets_collections",
+
+        # analytics tables
+        "users",
+        "proposals",
+        "dfr4_voting_results",
     ]
-    loaded_tables = con.execute("SHOW ALL TABLES;").fetchall()
-    loaded_tables = [table[2] for table in loaded_tables]
+    loaded_tables = all_tables()
 
     missing_tables = [table for table in mandatory_tables if table not in loaded_tables]
     if missing_tables:
@@ -75,8 +82,11 @@ def all_tables():
     all_tables = con.execute("SHOW ALL TABLES;").fetchall()
     return [table[2] for table in all_tables]
 
-def table_exists(table_name):
+def table_exists(table_name: str):
     return table_name in all_tables()
+
+def tables_exists(table_names: List[str]):
+    return all(table_exists(table_name) for table_name in table_names)
 
 def hide_sidebar(hide: bool = True):
     if hide:

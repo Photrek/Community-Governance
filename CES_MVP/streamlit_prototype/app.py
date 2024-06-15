@@ -4,7 +4,7 @@ import models
 import deep_funding_api
 
 import streamlit as st
-from typing import Callable
+from typing import Callable, List
 
 
 #
@@ -42,6 +42,26 @@ def manual_voting_xlsx_upload() -> bool:
         return True
     else:
         return False
+    
+def manual_voting_csv_upload(file_name: str) -> bool:
+    if utils.table_exists(f"stg_vp_{file_name}"):
+        return True
+    # Allow user to upload a single CSV file
+    raw_file = st.file_uploader(f"Provide the {file_name} csv file:", accept_multiple_files=False)
+    if raw_file is not None:
+            
+            # TODO: Check if the file has the expected columns
+            
+            with open(f"data/{file_name}.csv", "wb") as f:
+                f.write(raw_file.getvalue())
+    
+            models.load(con, f'models/dfr4/staging/voting_portal/stg_vp_{file_name}.sql')
+    
+            f"""
+            🎉 {file_name} successfully loaded
+            """
+            st.rerun()
+            return True
 
 # Page content starts here
 
@@ -49,17 +69,27 @@ def manual_voting_xlsx_upload() -> bool:
 # Data Management
 Load the data into the local database and prepare it for analysis.
 
-## Voting Portal - Data (excel file)
-Make sure the excel file provides the following sheets (case-sensitive):
-- Answers
-- Collections
-- Collections Balances
-- Questions
+## Voting Portal - Data
 """
 
-voting_portal_loaded = manual_voting_xlsx_upload()
+voting_portal_answers_loaded = manual_voting_csv_upload("voting_answers")
+voting_portal_questions_loaded = manual_voting_csv_upload("voting_questions")
+voting_portal_wallets_collections_loaded = manual_voting_csv_upload("wallets_collections")
+voting_portal_agix_balance_snapshot_loaded = manual_voting_csv_upload("agix_balance_snapshot")
 
-if voting_portal_loaded:
+# voting_portal_loaded = manual_voting_xlsx_upload()
+
+if utils.tables_exists([
+    "stg_vp_agix_balance_snapshot",
+    "stg_vp_voting_answers",
+    "stg_vp_voting_questions",
+    "stg_vp_wallets_collections",
+]):
+    """
+    🎉 Voting data successfully loaded
+
+    """
+
     "## Proposal Portal - Data (API)"
 
     do_refetch_data = st.checkbox("Refetch from API", value=True)
@@ -107,20 +137,18 @@ if voting_portal_loaded:
             progress_updater=__progress_updater("Fetching comment votes from voting portal. Please wait.")
         )
 
-        if utils.table_exists("stg_vp_ratings"):
-            models.load(con, 'models/intermediate/int_proposal_mapping.sql')
-            models.load(con, 'models/intermediate/int_ratings.sql')
 
 
-            models.load(con, 'models/marts/proposals.sql')
-            if fake_user_collection_ids:
-                models.load(con, 'models/marts/users_fake.sql', model_name='users')
-            else:
-                models.load(con, 'models/marts/users.sql')
-            models.load(con, 'models/marts/entropy.sql')
-            models.load(con, 'models/marts/vote_results.sql')
+        ## prepare data
+        models.load(con, 'models/intermediate/int_collection_balances.sql')
+        models.load(con, 'models/intermediate/int_proposal_mapping.sql')
+        models.load(con, 'models/intermediate/int_ratings.sql')
 
-        # current voting algorithm
+        models.load(con, 'models/marts/proposals.sql')
+        if fake_user_collection_ids:
+            models.load(con, 'models/marts/users_fake.sql', model_name='users')
+        else:
+            models.load(con, 'models/marts/users.sql')
 
         ## int_engagement_score
         models.load(con, 'models/dfr4/intermediate/int_comment_counts.sql')
@@ -134,6 +162,11 @@ if voting_portal_loaded:
 
         models.load(con, 'models/dfr4/marts/voting_weights.sql')
         models.load(con, 'models/dfr4/marts/dfr4_voting_results.sql')
+
+
+        # Entropy
+        models.load(con, 'models/marts/entropy.sql')
+        #     models.load(con, 'models/marts/vote_results.sql')
 
         """
         Data successfully loaded
@@ -149,6 +182,7 @@ if st.button("Reset local database", type="primary"):
     """
     Database successfully reset
     """
+    st.rerun()
 
 if not utils.mandatory_tables_loaded():
     utils.hide_sidebar(True)
