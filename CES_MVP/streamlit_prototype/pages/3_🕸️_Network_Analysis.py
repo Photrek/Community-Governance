@@ -36,7 +36,6 @@ with tab1:
             r.collection_id = e.collection_id
         WHERE
             r.proposal_id = {proposal_id}
-            AND r.grade <> 'skip'
         """
         data = con.sql(edges_query).df()
 
@@ -137,8 +136,6 @@ with tab2:
         on r.collection_id = u.collection_id
     join proposals as p
         on r.proposal_id = p.id
-    where
-        r.grade <> 'skip'
     """
 
     ratings = con.sql(edges_query).fetchall()
@@ -229,7 +226,6 @@ with tab3:
             FROM proposals
             WHERE round_id = {round_id}
         )
-        AND r.grade <> 'skip'
     """
 
     ratings = con.sql(edges_query).fetchall()
@@ -251,9 +247,9 @@ with tab3:
     components.html(fig.to_html(), height=600)
 
 
-    """
-    # TODO apply to API data once mapping question_id => proposal_id is done
-    """
+    # """
+    # # TODO apply to API data once mapping question_id => proposal_id is done
+    # """
 
     # option = utils.round_selector()
     # round_id = option[0]
