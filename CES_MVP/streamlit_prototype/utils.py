@@ -6,16 +6,16 @@ from typing import List
 
 con = cesdb.get_db_connection()
 
-def round_selector():
+def round_selector(index: int = None):
     rounds_raw = con.sql("SELECT id, name FROM stg_pp_rounds").fetchall()
     rounds = [(row[0], row[1]) for row in rounds_raw]
 
     option = st.selectbox(
-    "Which funding round do you want to evaluate?", 
-    rounds,
-    format_func=lambda x: x[1],
-    index=None,
-    placeholder="Select funding round...",
+        "Which funding round do you want to evaluate?", 
+        rounds,
+        format_func=lambda x: x[1],
+        index=index,
+        placeholder="Select funding round...",
     )
 
     if not option:

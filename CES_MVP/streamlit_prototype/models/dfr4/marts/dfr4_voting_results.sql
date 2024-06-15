@@ -27,6 +27,7 @@ votes_per_proposal as (
 select
     w.proposal_id,
     p.title,
+    pools.id as pool_id,
     pools.name as pool_name,
     pools.max_funding_amount as pool_funding_amount,
     p.requested_amount,

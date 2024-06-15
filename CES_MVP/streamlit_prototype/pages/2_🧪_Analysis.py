@@ -84,11 +84,54 @@ eligable = \begin{cases}
 \end{cases}
 """)
 
+
+"### All voting results"
 voting_results = con.sql("select * from dfr4_voting_results").df()
 st.dataframe(
     voting_results,
     hide_index=True,
     column_config={
+            "proposal_id": st.column_config.NumberColumn(
+                "proposal_id",
+                format="%d",
+            )
+        }
+    )
+
+"### Voting results per pool"
+option = utils.round_selector(index=3)
+round_id = option[0]
+
+pools_query = f"""
+select
+    p.id,
+    p.name,
+    p.max_funding_amount
+from
+    stg_pp_pools as p
+left join stg_pp_rounds_pools rp
+    on p.id = rp.pool_id
+where
+    rp.round_id = {round_id}
+"""
+pools = con.sql(pools_query).df()
+
+for index, row in pools.iterrows():
+    pool_id = row['id']
+    pool_name = row['name']
+    pool_max_funding = row['max_funding_amount']
+
+    f"""
+    ### {pool_id} - {pool_name}
+
+    Max Funding: {pool_max_funding}
+    """
+    query = f"select * from dfr4_voting_results where pool_id = {pool_id}"
+    voting_results = con.sql(query).df()
+    st.dataframe(
+        voting_results,
+        hide_index=True,
+        column_config={
             "proposal_id": st.column_config.NumberColumn(
                 "proposal_id",
                 format="%d",
