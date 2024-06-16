@@ -11,6 +11,20 @@ con = cesdb.get_db_connection()
 
 "# Deep Funding Round 4 Analysis"
 
+
+"## General Insights"
+col1, col2, col3 = st.columns(3)
+
+col1.metric("Unique Voters", con.sql("select count(distinct collection_uuid) from stg_vp_voting_answers").fetchall()[0][0])
+col2.metric("Proposals with Votes", con.sql("select count(distinct question_id) from stg_vp_voting_answers").fetchall()[0][0])
+col3.metric(
+    "Users with coll id or address",
+    con.sql("select count(distinct user_id) from users where collection_id is not null").fetchall()[0][0],
+    delta=f"{con.sql('select -1 * count(distinct user_id) from users where collection_id is null').fetchall()[0][0]} without",
+)
+
+
+
 """
 ## Engagement Score
 
@@ -21,7 +35,12 @@ The engagement score per user is calculated as follows:
 | comment count |      3 |
 | upvote count  |      2 |
 | downvote count|     -3 |
+
 """
+
+col1, col2, col3 = st.columns(3)
+col1.metric("Comments", con.sql("select count(*) from stg_pp_comments").fetchall()[0][0])
+col2.metric("Users voting on comments", con.sql("select count(distinct voter_id) from stg_pp_comment_votes").fetchall()[0][0])
 
 st.latex(r"""
          \text{Engagement Score} = 3 \times \text{comment count} + 2 \times \text{upvote count} - 3 \times \text{downvote count}
