@@ -3,6 +3,7 @@ import os
 
 import streamlit as st
 
+read_mode = os.getenv('READ_ONLY', 'false') == 'true'
 
 @st.cache_resource
 def get_db_connection() -> duckdb.DuckDBPyConnection:
@@ -13,12 +14,14 @@ def get_db_connection() -> duckdb.DuckDBPyConnection:
         os.remove('demo.db')
 
     print("get_db_connection")
-    con = duckdb.connect(database='demo.db')
-    # models.load_all(con, 'models')
-    con.sql("CREATE SCHEMA IF NOT EXISTS db;")
+    con = duckdb.connect(database='demo.db', read_only=read_mode)
+    
+    if not read_mode:
+        con.sql("CREATE SCHEMA IF NOT EXISTS db;")
+        con.sql("USE db;")
+        create_function(con, 'levenshtein', levenshtein)
     con.sql("USE db;")
 
-    create_function(con, 'levenshtein', levenshtein)
 
     # if 'db_connection' not in st.session_state:
     #     st.session_state['db_connection'] = con
