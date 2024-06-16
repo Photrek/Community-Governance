@@ -47,7 +47,7 @@ st.latex(r"""
          """)
 
 engagement_score = con.sql("select * from int_engagement_score").df()
-st.dataframe(engagement_score, hide_index=True)
+st.dataframe(utils.filter_dataframe(engagement_score), hide_index=True)
 
 
 """
@@ -61,7 +61,7 @@ st.latex(r"""
 
 reputation_weight = con.sql("select * from int_reputation_weight").df()
 st.dataframe(
-    reputation_weight,
+    utils.filter_dataframe(reputation_weight),
     hide_index=True,
     column_config={
             "proposal_id": st.column_config.NumberColumn(
@@ -80,7 +80,7 @@ st.latex(r"""
 
 voting_weights = con.sql("select * from voting_weights order by total_voting_weight desc").df()
 st.dataframe(
-    voting_weights,
+    utils.filter_dataframe(voting_weights),
     hide_index=True,
     column_config={
             "proposal_id": st.column_config.NumberColumn(
@@ -107,7 +107,7 @@ eligable = \begin{cases}
 "### All voting results"
 voting_results = con.sql("select * from dfr4_voting_results").df()
 st.dataframe(
-    voting_results,
+    utils.filter_dataframe(voting_results),
     hide_index=True,
     column_config={
             "proposal_id": st.column_config.NumberColumn(
@@ -116,6 +116,8 @@ st.dataframe(
             )
         }
     )
+
+st.stop()
 
 "### Voting results per pool"
 option = utils.round_selector(index=3)
