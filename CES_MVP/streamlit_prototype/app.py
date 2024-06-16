@@ -161,7 +161,9 @@ if utils.tables_exists([
         models.load(con, 'models/dfr4/intermediate/int_min_max_engagement_score_per_proposal.sql')
         models.load(con, 'models/dfr4/intermediate/int_reputation_weight.sql')
 
+        ## Marts
         models.load(con, 'models/dfr4/marts/voting_weights.sql')
+        models.load(con, 'models/dfr4/intermediate/int_votes_per_proposal.sql')
         models.load(con, 'models/dfr4/marts/dfr4_voting_results.sql')
 
 

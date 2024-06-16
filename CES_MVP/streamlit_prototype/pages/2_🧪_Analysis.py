@@ -53,7 +53,7 @@ st.dataframe(utils.filter_dataframe(engagement_score), hide_index=True)
 """
 ## Reputation Weights
 
-The reputation weight is a logarithmic scale that distributes the user engagement score between 1-5.
+The reputation weight is a logarithmic scale that distributes the user engagement score in range [1,5].
 """
 st.latex(r"""
          \text{Reputation weight} = 1 + (4 \log\left(\frac{\text{engagement score}}{\text{min engagement score}}\right) / \log\left(\frac{\text{max engagement score}}{\text{min engagement score}}\right))
@@ -67,8 +67,26 @@ st.dataframe(
             "proposal_id": st.column_config.NumberColumn(
                 "proposal_id",
                 format="%d",
+            ),
+            "collection_id": st.column_config.NumberColumn(
+                "collection_id",
+                format="%d",
             )
         }    
+    )
+
+with st.expander("More details"):
+    "### Min/Max engagement score per user"
+    int_min_max_engagement_score_per_proposal = con.sql("select * from int_min_max_engagement_score_per_proposal").df()
+    st.dataframe(
+        utils.filter_dataframe(int_min_max_engagement_score_per_proposal),
+        hide_index=True,
+        column_config={
+            "proposal_id": st.column_config.NumberColumn(
+                "proposal_id",
+                format="%d",
+            )
+        }
     )
 
 """
@@ -103,13 +121,81 @@ eligable = \begin{cases}
 \end{cases}
 """)
 
+voting_results = con.sql("""
+                         select 
+                            proposal_id,
+                            title,
+                            pool_id,
+                            pool_name,
+                            pool_funding_amount,
+                            requested_amount,
+                            votes_per_proposal,
+                            total_voters,
+                            perc_people_that_voted,
+                            weighted_sum,
+                            average_grade,
+                            eligible,
+                            max_funding_amount,
 
-"### All voting results"
-voting_results = con.sql("select * from dfr4_voting_results").df()
+                         from dfr4_voting_results
+                         """).df()
 st.dataframe(
     utils.filter_dataframe(voting_results),
     hide_index=True,
     column_config={
+            "proposal_id": st.column_config.NumberColumn(
+                "proposal_id",
+                format="%d",
+            )
+        }
+    )
+
+with st.expander("More details"):
+
+    "### Votes per grade"
+    voting_results = con.sql("""
+                         select 
+                            proposal_id,
+                            title,
+                            votes_per_proposal,
+                            total_voters,
+                            perc_people_that_voted,
+                            weighted_sum,
+                            average_grade,
+                             
+                            grade_sum,
+                            grade_1,
+                            grade_2,
+                            grade_3,
+                            grade_4,
+                            grade_5,
+                            grade_6,
+                            grade_7,
+                            grade_8,
+                            grade_9,
+                            grade_10,
+                            average_grade_2,
+
+                         from dfr4_voting_results
+                         """).df()
+    st.dataframe(
+        utils.filter_dataframe(voting_results),
+        hide_index=True,
+        column_config={
+                "proposal_id": st.column_config.NumberColumn(
+                    "proposal_id",
+                    format="%d",
+                )
+            }
+        )
+
+
+    "### Votes per proposal"
+    int_votes_per_proposal = con.sql("select * from int_votes_per_proposal").df()
+    st.dataframe(
+        utils.filter_dataframe(int_votes_per_proposal),
+        hide_index=True,
+        column_config={
             "proposal_id": st.column_config.NumberColumn(
                 "proposal_id",
                 format="%d",

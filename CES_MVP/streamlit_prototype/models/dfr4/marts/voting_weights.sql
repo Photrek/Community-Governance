@@ -3,8 +3,6 @@ select
     r.proposal_id,
     r.grade,
     r.balance,
-
-    e.engagement_score,
     
     sqrt(r.balance/100000000) as sqrt_balance,
     rw.reputation_weight,
@@ -16,7 +14,4 @@ from
 left join int_reputation_weight as rw
     on r.proposal_id = rw.proposal_id 
         and r.collection_id = rw.collection_id
-
-left join int_engagement_score as e
-    on r.collection_id = e.collection_id
 ;

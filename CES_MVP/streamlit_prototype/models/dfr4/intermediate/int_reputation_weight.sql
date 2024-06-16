@@ -18,8 +18,4 @@ left join int_engagement_score as e
     on r.collection_id = e.collection_id
 left join int_min_max_engagement_score_per_proposal as mm
     on r.proposal_id = mm.proposal_id
-
--- do not ignore skipped votes?
--- where
-    -- r.grade <> 0
 ;

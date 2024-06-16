@@ -55,14 +55,6 @@ total_voters as (
         count(distinct collection_id) as total_voters
     from
         voting_weights
-),
-
-votes_per_proposal as (
-    select 
-        proposal_id, 
-        count(*) as votes_per_proposal,
-    from int_ratings
-    group by proposal_id
 )
 
 select
@@ -102,7 +94,7 @@ join weighted_sum_of_grades as w
     on w.proposal_id = p.id
 join stg_pp_pools as pools
     on p.pool_id = pools.id
-join votes_per_proposal as vpp
+join int_votes_per_proposal as vpp
     on w.proposal_id = vpp.proposal_id
 order by
     pool_name,
