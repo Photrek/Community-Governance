@@ -116,9 +116,11 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: Filtered dataframe
     """
 
+    unique_key = hash(tuple(df.columns))
+
     # hash all column names to generate unique key
     # to avoid conflicts with other dataframes
-    modify = st.checkbox(label="Add filters", key=hash(tuple(df.columns)))
+    modify = st.checkbox(label="Add filters", key=f"{unique_key}_filter")
 
     if not modify:
         return df
@@ -161,6 +163,7 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                     _max,
                     (_min, _max),
                     step=step,
+                    key=f"{unique_key}_{column}",
                 )
                 df = df[df[column].between(*user_num_input)]
             elif is_datetime64_any_dtype(df[column]):
