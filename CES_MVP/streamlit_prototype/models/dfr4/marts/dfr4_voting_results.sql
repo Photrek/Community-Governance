@@ -1,10 +1,51 @@
-with weighted_sum_of_grades as (
+with votes as (
+    select
+        w.proposal_id,
+        w.total_voting_weight,
+        w.grade,
+    from
+        voting_weights as w
+    where
+        w.grade <> 0
+),
+
+weighted_sum_of_grades as (
     select
         w.proposal_id,
         sum(w.grade * w.total_voting_weight) as weighted_sum,
-        weighted_sum / sum(w.total_voting_weight) as average_grade,
+        weighted_sum / case when sum(w.total_voting_weight) = 0 then 1 else sum(w.total_voting_weight) end as average_grade,
+
+        -- debug information to check if average_grade is correct
+        sum(w.grade) / count(w.grade) as simple_average_grade,
+
+        SUM(CASE WHEN w.grade = 1 THEN w.total_voting_weight ELSE 0 END) AS grade_1,
+        SUM(CASE WHEN w.grade = 2 THEN w.total_voting_weight ELSE 0 END) AS grade_2,
+        SUM(CASE WHEN w.grade = 3 THEN w.total_voting_weight ELSE 0 END) AS grade_3,
+        SUM(CASE WHEN w.grade = 4 THEN w.total_voting_weight ELSE 0 END) AS grade_4,
+        SUM(CASE WHEN w.grade = 5 THEN w.total_voting_weight ELSE 0 END) AS grade_5,
+        SUM(CASE WHEN w.grade = 6 THEN w.total_voting_weight ELSE 0 END) AS grade_6,
+        SUM(CASE WHEN w.grade = 7 THEN w.total_voting_weight ELSE 0 END) AS grade_7,
+        SUM(CASE WHEN w.grade = 8 THEN w.total_voting_weight ELSE 0 END) AS grade_8,
+        SUM(CASE WHEN w.grade = 9 THEN w.total_voting_weight ELSE 0 END) AS grade_9,
+        SUM(CASE WHEN w.grade = 10 THEN w.total_voting_weight ELSE 0 END) AS grade_10,
+        grade_1 + grade_2 + grade_3 + grade_4 + grade_5 + grade_6 + grade_7 + grade_8 + grade_9 + grade_10 as grade_sum,
+
+        (
+            (
+                (grade_1 * 1)
+                + (grade_2 * 2)
+                + (grade_3 * 3)
+                + (grade_4 * 4)
+                + (grade_5 * 5)
+                + (grade_6 * 6)
+                + (grade_7 * 7)
+                + (grade_8 * 8)
+                + (grade_9 * 9)
+                + (grade_10 * 10)
+            ) / case when grade_sum = 0 then 1 else grade_sum end
+        ) as average_grade_2
     from
-        voting_weights as w
+        votes as w
     group by
         w.proposal_id
 ),
@@ -41,7 +82,20 @@ select
     average_grade > 6.5 and perc_people_that_voted > 1.0 as eligible,
 
     -- TODO: use window function to calculate remaining funds by substracting the requested_amount if eligible
-    pools.max_funding_amount
+    pools.max_funding_amount,
+
+    w.grade_sum,
+    w.grade_1,
+    w.grade_2,
+    w.grade_3,
+    w.grade_4,
+    w.grade_5,
+    w.grade_6,
+    w.grade_7,
+    w.grade_8,
+    w.grade_9,
+    w.grade_10,
+    w.average_grade_2,
 from
     proposals as p, total_voters tv
 join weighted_sum_of_grades as w

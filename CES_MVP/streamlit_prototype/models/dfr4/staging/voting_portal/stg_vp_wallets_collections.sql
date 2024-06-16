@@ -25,4 +25,3 @@ FROM
 WHERE
     collection_id IS NOT NULL
     AND collection_uuid IS NOT NULL
-;

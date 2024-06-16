@@ -1,7 +1,7 @@
 select
     u.user_id,
     u.collection_id,
-    count(c.*) as comment_count
+    count(c.user_id) as comment_count
 from
     users as u
 left join stg_pp_comments as c
@@ -9,3 +9,4 @@ left join stg_pp_comments as c
 group by
     u.user_id,
     u.collection_id
+;

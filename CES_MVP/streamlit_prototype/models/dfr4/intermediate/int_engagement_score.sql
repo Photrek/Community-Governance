@@ -1,6 +1,7 @@
 select 
     cv.user_id,
     cv.collection_id,
+    cv.balance,
     c.comment_count,
     cv.upvote_count,
     cv.downvote_count,
@@ -11,6 +12,6 @@ select
     + (cv.downvote_count * -3.0) as engagement_score
 from
     int_comment_votes as cv
-join int_comment_counts as c
+left join int_comment_counts as c
     on cv.user_id = c.user_id
 ;

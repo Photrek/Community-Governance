@@ -1,5 +1,5 @@
 select
-    c.collection_id,
+    cb.collection_id,
     m.pp_proposal_id as proposal_id,
 
     case
@@ -7,13 +7,11 @@ select
         else cast(r.grade as int)
     end as grade,
     
-    b.balance
+    coalesce(cb.balance, 0) as balance,
 from
     stg_vp_voting_answers as r
-left join stg_vp_wallets_collections as c
-    on r.collection_uuid = c.collection_uuid
-left join int_collection_balances as b
-    on r.collection_uuid = b.collection_uuid
-join int_proposal_mapping as m on
+left join int_collection_balances as cb
+    on r.collection_uuid = cb.collection_uuid
+left join int_proposal_mapping as m on
     r.question_id = m.vp_question_id
 ;

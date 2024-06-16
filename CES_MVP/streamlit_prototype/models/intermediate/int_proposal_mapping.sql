@@ -10,7 +10,6 @@ SELECT
     levenshtein(vp.proposal_title, pp.title) AS distance
 FROM
     stg_vp_voting_questions vp
-CROSS JOIN
-    stg_pp_proposals pp
-WHERE
-    distance < 5;
+left JOIN stg_pp_proposals pp
+    on vp.details_url = pp.link
+;
