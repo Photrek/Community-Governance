@@ -88,6 +88,7 @@ select
     w.grade_9,
     w.grade_10,
     w.average_grade_2,
+    w.simple_average_grade,
 from
     proposals as p, total_voters tv
 join weighted_sum_of_grades as w

@@ -175,6 +175,7 @@ with st.expander("More details"):
                             grade_9,
                             grade_10,
                             average_grade_2,
+                            simple_average_grade,
 
                          from dfr4_voting_results
                          """).df()
