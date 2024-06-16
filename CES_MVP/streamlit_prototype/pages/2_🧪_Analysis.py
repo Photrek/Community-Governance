@@ -30,12 +30,12 @@ col3.metric(
 
 The engagement score per user is calculated as follows:
 
-| Event         | Weight |
-|---------------|--------|
-| comment count |      3 |
-| upvote count  |      2 |
-| downvote count|     -3 |
-
+| Event           | Weight |
+|-----------------|--------|
+| comment count   |      3 |
+| upvote count    |      2 |
+| downvote count  |     -3 |
+| reviews created |      2 |
 """
 
 col1, col2, col3 = st.columns(3)
