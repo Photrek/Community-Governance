@@ -36,7 +36,6 @@ The engagement score per user is calculated as follows:
 | upvote count                      |      2 |
 | downvote count                    |     -3 |
 | reviews created                   |      2 |
-| reviews average overall rating    |      2 |
 """
 
 col1, col2, col3 = st.columns(3)

@@ -17,7 +17,7 @@ select
     + (cv.upvote_count * 2.0) 
     + (cv.downvote_count * -3.0)
     + (review_count * 2)
-    + (average_review_overall_rating * 2)
+    -- + (average_review_overall_rating * 2)
         as engagement_score
 from
     int_comment_votes as cv
