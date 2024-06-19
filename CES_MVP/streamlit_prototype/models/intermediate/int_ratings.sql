@@ -1,4 +1,5 @@
 select
+    r.collection_uuid,
     cb.collection_id,
     m.pp_proposal_id as proposal_id,
 

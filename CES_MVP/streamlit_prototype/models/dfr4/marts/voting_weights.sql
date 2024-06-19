@@ -1,5 +1,6 @@
 select
     r.collection_id,
+    r.collection_uuid,
     r.proposal_id,
     r.grade,
     r.balance,

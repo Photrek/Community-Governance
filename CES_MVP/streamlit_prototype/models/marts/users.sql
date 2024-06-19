@@ -1,18 +1,30 @@
-select
-    -- use cb.collection_id when available, otherwise use w.collection_id
-    coalesce(cb.collection_id, w.collection_id) as collection_id,
+with user_wallet_mapping as (
+    select
+        u.user_id,
+        u.total_proposals,
+        u.collection_uuid as user_collection_uuid,
+        w.collection_uuid as wallet_address_collection_uuid,
+        w.address,
+    from
+        stg_pp_users as u
+    left join stg_vp_wallets_collections as w
+        on u.wallet_address = w.address
+)
 
+select
     u.user_id,
     u.total_proposals,
+
+    cb.collection_id,
+    cb.collection_uuid,
 
     -- convert balance to 0 when not a number otherwise keep the balance as int
     coalesce(cb.balance, 0) as balance,
 
 from
-    stg_pp_users as u
+    int_collection_balances as cb
 
-left join int_collection_balances as cb
-    on u.collection_uuid = cb.collection_uuid
-left join stg_vp_wallets_collections as w
-    on u.wallet_address = w.address
+left join user_wallet_mapping as u
+    on cb.collection_uuid = u.user_collection_uuid
+        or cb.collection_uuid = u.wallet_address_collection_uuid
 ;

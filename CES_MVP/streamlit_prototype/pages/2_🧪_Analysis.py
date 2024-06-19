@@ -19,8 +19,8 @@ col1.metric("Unique Voters", con.sql("select count(distinct collection_uuid) fro
 col2.metric("Proposals with Votes", con.sql("select count(distinct question_id) from stg_vp_voting_answers").fetchall()[0][0])
 col3.metric(
     "Users with coll id or address",
-    con.sql("select count(distinct user_id) from users where collection_id is not null").fetchall()[0][0],
-    delta=f"{con.sql('select -1 * count(distinct user_id) from users where collection_id is null').fetchall()[0][0]} without",
+    con.sql("select count(*) from stg_pp_users where collection_uuid is not null or wallet_address is not null;").fetchall()[0][0],
+    delta=f"{con.sql('select -1 * count(*) from stg_pp_users where collection_uuid is null and wallet_address is null;').fetchall()[0][0]} without",
 )
 
 
@@ -120,6 +120,36 @@ eligable = \begin{cases}
    false &\text{otherwise}
 \end{cases}
 """)
+
+"""
+```sql
+with votes as (
+    select
+        w.proposal_id,
+        w.total_voting_weight,
+        w.grade,
+    from
+        voting_weights as w
+    where
+        w.grade <> 0
+),
+
+weighted_sum_of_grades as (
+    select
+        w.proposal_id,
+        sum(w.grade * w.total_voting_weight) as weighted_sum,
+        -- average grade formula
+        weighted_sum / case when sum(w.total_voting_weight) = 0 then 1 else sum(w.total_voting_weight) end as average_grade,
+
+    from
+        votes as w
+    group by
+        w.proposal_id
+),
+
+...
+```
+"""
 
 voting_results = con.sql("""
                          select 
