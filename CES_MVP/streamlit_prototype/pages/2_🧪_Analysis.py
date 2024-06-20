@@ -23,6 +23,11 @@ col3.metric(
     delta=f"{con.sql('select -1 * count(*) from stg_pp_users where collection_uuid is null and wallet_address is null;').fetchall()[0][0]} without",
 )
 
+col1.metric(
+    "Voters with AGIX > 0",
+    con.sql("select count(distinct collection_uuid) from int_ratings where balance > 0").fetchall()[0][0],
+    delta=f"{con.sql('select -1 * count(distinct collection_uuid) from int_ratings where balance = 0').fetchall()[0][0]} without"
+)
 
 
 """
