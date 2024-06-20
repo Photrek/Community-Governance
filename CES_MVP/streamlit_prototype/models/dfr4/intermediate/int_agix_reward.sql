@@ -16,6 +16,7 @@ total_agix_reward as (
     left join agix_distribution as ad
         on r.collection_id = ad.collection_id
     where
+        -- ignore skipped votes
         r.grade <> 0
     group by
         r.proposal_id
