@@ -3,6 +3,7 @@ with votes as (
         w.proposal_id,
         w.total_voting_weight,
         w.grade,
+        w.total_voting_weight_wo_reputation,
     from
         voting_weights as w
     where
@@ -12,8 +13,14 @@ with votes as (
 weighted_sum_of_grades as (
     select
         w.proposal_id,
+
+        -- final computation
         sum(w.grade * w.total_voting_weight) as weighted_sum,
         weighted_sum / case when sum(w.total_voting_weight) = 0 then 1 else sum(w.total_voting_weight) end as average_grade,
+
+        -- final computation ignoring reputation score to compare to previous calculations
+        sum(w.grade * w.total_voting_weight_wo_reputation) as weighted_sum_wo_reputation,
+        weighted_sum_wo_reputation / case when sum(w.total_voting_weight_wo_reputation) = 0 then 1 else sum(w.total_voting_weight_wo_reputation) end as average_grade_wo_reputation,
 
         -- debug information to check if average_grade is correct
         sum(w.grade) / count(w.grade) as simple_average_grade,
@@ -72,6 +79,8 @@ select
     w.weighted_sum,
     w.average_grade,
     average_grade > 6.5 and perc_people_that_voted > 1.0 as eligible,
+
+    w.average_grade_wo_reputation,
 
     -- TODO: use window function to calculate remaining funds by substracting the requested_amount if eligible
     pools.max_funding_amount,

@@ -169,6 +169,7 @@ voting_results = con.sql("""
                             perc_people_that_voted,
                             weighted_sum,
                             average_grade,
+                            average_grade_wo_reputation,
                             eligible,
                             max_funding_amount,
 
@@ -197,6 +198,7 @@ with st.expander("More details"):
                             perc_people_that_voted,
                             weighted_sum,
                             average_grade,
+                            average_grade_wo_reputation,
                              
                             grade_sum,
                             grade_1,

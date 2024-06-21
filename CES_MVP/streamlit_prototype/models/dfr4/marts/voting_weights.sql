@@ -7,7 +7,10 @@ select
     
     sqrt(r.balance/100000000) as sqrt_balance,
     rw.reputation_weight,
-    sqrt_balance * rw.reputation_weight as total_voting_weight
+    sqrt_balance * rw.reputation_weight as total_voting_weight,
+    
+    -- voting without ignoring reputation to be able to compare to previous calculations
+    sqrt_balance as total_voting_weight_wo_reputation
 from
     int_ratings as r
 
