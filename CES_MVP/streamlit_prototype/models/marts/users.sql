@@ -2,6 +2,8 @@ with user_wallet_mapping as (
     select
         u.user_id,
         u.total_proposals,
+        u.user_name,
+        u.email,
         u.collection_uuid as user_collection_uuid,
         w.collection_uuid as wallet_address_collection_uuid,
         w.address,
@@ -14,6 +16,8 @@ with user_wallet_mapping as (
 select
     u.user_id,
     u.total_proposals,
+    u.user_name,
+    u.email,
 
     cb.collection_id,
     cb.collection_uuid,
