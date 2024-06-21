@@ -62,6 +62,8 @@ total_voters as (
         count(distinct collection_id) as total_voters
     from
         voting_weights
+    where
+        balance > 0
 )
 
 select
