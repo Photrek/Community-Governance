@@ -4,6 +4,7 @@ with raw_agix_balance_snapshot as (
         network::VARCHAR AS network,
         address::VARCHAR AS address,
         balance::BIGINT AS balance,
+        stake::BIGINT AS stake,
         
         created_on::DATETIME AS created_on,
         updated_on::DATETIME AS updated_on,
@@ -16,6 +17,7 @@ SELECT
     network,
     address,
     balance,
+    stake,
     created_on,
     updated_on,
 FROM
