@@ -2,6 +2,7 @@ SELECT
     id::BIGINT AS id,
     round_id::BIGINT AS round_id,
     pool_id::BIGINT AS pool_id,
+    proposer_id::BIGINT AS proposer_id,
     title::VARCHAR AS title,
     content::VARCHAR AS content,
     link::VARCHAR AS link,

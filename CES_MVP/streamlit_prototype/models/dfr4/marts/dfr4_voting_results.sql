@@ -67,6 +67,8 @@ total_voters as (
 select
     w.proposal_id,
     p.title,
+    p.link as proposal_url,
+    p.user_name as proposer_name,
     pools.id as pool_id,
     pools.name as pool_name,
     pools.max_funding_amount as pool_funding_amount,

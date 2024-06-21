@@ -160,6 +160,8 @@ voting_results = con.sql("""
                          select 
                             proposal_id,
                             title,
+                            proposal_url,
+                            proposer_name,
                             pool_id,
                             pool_name,
                             pool_funding_amount,
