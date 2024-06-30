@@ -1,5 +1,13 @@
 Welcome to your new dbt project!
 
+# TODO
+- [ ] Add new model to evidence report
+- [ ] Remove bronze, silver, gold models
+- [ ] Move data from `data/new` to `data`
+- [ ] Fix id columns (see [here](https://docs.getdbt.com/best-practices/how-we-style/1-how-we-style-our-dbt-models))
+- [ ] Add data tests
+- [ ] Add unit tests
+
 ### Using the starter project
 
 Try running the following commands:
