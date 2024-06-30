@@ -36,8 +36,12 @@ models:
       +materialized: table
     intermediate:
       +materialized: view
+      +docs:
+        node_color: "#C084D8"
     marts:
       +materialized: view
+      +docs:
+        node_color: "#DAA520"
 
     # Config indicated by + and applies to all files under models/bronze/
     bronze:
