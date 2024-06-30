@@ -5,16 +5,17 @@ export
 DBT_COMMAND_PREFIX := cd $(DBT_FOLDER) && pipenv run dbt
 
 # phony targets
-.PHONY: transform debug compile db help setup docs reports
+.PHONY: run debug compile clean db help setup docs reports
 
 # targets
-transform:
-	@echo "Transforming data"
-	$(DBT_COMMAND_PREFIX) run --target $(DBT_TARGET)
-
-debug compile:
-	@echo "Debugging dbt"
+debug compile run:
+	@echo "Run dbt"
 	$(DBT_COMMAND_PREFIX) $@ --target $(DBT_TARGET)
+
+clean:
+	@echo "Clean dbt and db"
+	$(DBT_COMMAND_PREFIX) $@ --target $(DBT_TARGET)
+	@rm $(DATA_DIR)/$(DBT_TARGET).duckdb
 
 setup:
 	@echo "🏗️ Setting up project\n"
@@ -33,14 +34,15 @@ docs:
 	$(DBT_COMMAND_PREFIX) docs serve --target $(DBT_TARGET)
 
 db:
-	@echo "Spawning DuckDB using init.sql"
+	@echo "Spawning DuckDB"
 	duckdb $(DATA_DIR)/$(DBT_TARGET).duckdb
 
 # help message
 help:
 	@echo "Available tasks:"
-	@echo "  db		- Start dbt output duckdb"
+	@echo "  db	        - Start dbt output duckdb"
 	@echo "  debug		- Run dbt debug"
+	@echo "  docs		- Build and serve dbt docs"
 	@echo "  compile	- Run dbt compile"
 	@echo "  transform	- Run dbt transform performing all the transformations"
 	@echo "  reports	- Generate reports using evidence"

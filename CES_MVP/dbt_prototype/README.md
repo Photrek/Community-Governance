@@ -10,6 +10,6 @@
     * `questions.csv`
     * `users.csv`
     * `wallet-links.csv`
-* Run dbt transformations `make transfrom`
+* Run dbt transformations `make run`
 * Inspect data using `make db`
 * Inspect documentation `make docs`

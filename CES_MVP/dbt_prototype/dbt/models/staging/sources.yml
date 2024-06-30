@@ -1,0 +1,29 @@
+config-version: 2
+version: 2
+
+sources:
+  - name: proposal_portal     # the name we want to reference this source by
+    meta:
+      external_location: "../{{ env_var('DATA_DIR') }}/new/{name}.json"
+    tables:
+      - name: comment_votes
+      - name: comments
+      - name: milestones
+      - name: pools
+      - name: proposals
+      - name: reviews
+      - name: rounds_pools
+      - name: rounds
+      - name: users
+
+  # TODO: is this the correct name?
+  - name: voting_portal     # the name we want to reference this source by
+    meta:
+      external_location: "../{{ env_var('DATA_DIR') }}/new/{name}.csv"
+    tables:
+      - name: agix_balance_snapshot
+      - name: voting_answers
+      - name: voting_questions
+      - name: wallets_collections
+
+      
