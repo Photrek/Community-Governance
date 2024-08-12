@@ -8,14 +8,14 @@ DBT_COMMAND_PREFIX := cd $(DBT_FOLDER) && pipenv run dbt
 .PHONY: run debug compile clean db help setup docs reports
 
 # targets
-debug compile run:
+debug compile run build:
 	@echo "Run dbt"
 	$(DBT_COMMAND_PREFIX) $@ --target $(DBT_TARGET)
 
 clean:
 	@echo "Clean dbt and db"
 	$(DBT_COMMAND_PREFIX) $@ --target $(DBT_TARGET)
-	@rm $(DATA_DIR)/$(DBT_TARGET).duckdb
+	@rm $(DATA_DIR)/$(DBT_TARGET).duckdb || true
 
 setup:
 	@echo "🏗️ Setting up project\n"
@@ -44,7 +44,7 @@ help:
 	@echo "  debug		- Run dbt debug"
 	@echo "  docs		- Build and serve dbt docs"
 	@echo "  compile	- Run dbt compile"
-	@echo "  transform	- Run dbt transform performing all the transformations"
+	@echo "  build		- Run dbt transform performing all the transformations"
 	@echo "  reports	- Generate reports using evidence"
 
 # By default, when `make` is called without arguments, display help
