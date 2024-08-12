@@ -4,131 +4,37 @@ title: CES MVP
 
 _Demonstration of tooling used to extract, load and transform the DeepFunding data_
 
-## Investment Round X Results
+## Deep Funding Round 4
 
-```sql votes_summary
-select 
-  sum(num_votes) as total_votes,
-  count(proposal_id) as total_proposals
-from vote_results
+```sql dfr4_voting_results
+select
+  *,
+  case 
+    when eligible then '<b>Bold</b> text'
+    else '<input type="checkbox" />'
+  end as eligible_html
+from dfr4_voting_results
 ```
 
-<BigValue data={votes_summary} value=total_votes />
-<BigValue data={votes_summary} value=total_proposals />
-
-### Voting Algorihtms
-
-```sql algorihtms
--- static names of voting algorithms
-SELECT *
-FROM (
-    VALUES 
-        ('one_user_one_vote'),
-        ('one_user_one_vote_weighted_sqrt'),
-) AS StaticRows (name)
-```
-
-<Dropdown
-    data={algorihtms} 
-    name=algorithm
-    title="Select voting algorithm"
-    value=name
-    defaultValue=one_user_one_vote
-/>
-
-```sql voting_result
-SELECT
-    p.proposal_id,
-    p.title,
-    COUNT(CASE WHEN r.grade <> 'skip' THEN 1 END) AS num_votes,
-
-    -- need the skipped answers to calculate % of people that voted
-    (COUNT(CASE WHEN r.grade <> 'skip' THEN 1 END) * 100.0) / COUNT(r.*) AS percent_voted,
-
-    IF('${inputs.algorithm.value}' = 'one_user_one_vote_weighted_sqrt', 
-      
-      -- one_user_one_vote_weighted_sqrt
-      NULLIF(
-        -- remove skipped votes
-        SUM(CASE WHEN r.grade <> 'skip' THEN sqrt(r.total_balance) * CAST(r.grade AS INTEGER) END) / 
-        NULLIF(SUM(CASE WHEN r.grade <> 'skip' THEN sqrt(r.total_balance) END), 0), 
-      0)
-
-    , 
-    
-      -- one_user_one_vote
-      NULLIF(
-        -- remove skipped votes
-        SUM(CASE WHEN r.grade <> 'skip' THEN CAST(r.grade AS INTEGER) END) / 
-        NULLIF(COUNT(CASE WHEN r.grade <> 'skip' THEN 1 END), 0), 
-      0) 
-
-    ) AS avg_grade
-FROM 
-    proposals AS p
-LEFT JOIN 
-    ratings AS r
-ON p.proposal_id = r.proposal_id
-GROUP BY 
-    p.proposal_id, 
-    p.title
-```
-
-```sql voting_sqrt_ranked
-SELECT
-  RANK() OVER (ORDER BY avg_grade DESC) AS rank,
-  proposal_id,
-  title,
-  num_votes,
-  percent_voted,
-  avg_grade,
-  'https://proposals.deepfunding.ai/graduated/accepted/69b71ede-ae53-43c8-ab78-93eb213a378f' as proposal_url
-FROM 
-  ${voting_result}
-```
-
-<DataTable data={voting_sqrt_ranked} rowShading=true search=true rows=25  link=proposal_url >
-    <Column id=rank />
+<DataTable 
+  data={dfr4_voting_results}
+  rowShading=true
+  search=true
+  rows=25
+  groupBy=pool_name
+  groupType=section >
+    <Column id=pool_id />
+    <Column id=pool_name />
     <Column id=proposal_id />
     <Column id=title wrap=true />
-    <Column id=num_votes contentType=colorscale scaleColor=#e3af05 />
-    <Column id=percent_voted contentType=colorscale scaleColor=blue />
-    <Column id=avg_grade contentType=colorscale />
+    <Column id=proposal_url contentType=link wrap=true />
+    <Column id=pool_funding_amount />
+    <Column id=requested_amount />
+    <Column id=votes_per_proposal />
+    <Column id=total_voters />
+    <Column id=perc_people_that_voted contentType=colorscale scaleColor=#e3af05 />
+    <Column id=weighted_sum />
+    <Column id=average_grade />
+    <Column id=eligible />
+    <Column id=eligible_html contentType=html class=markdown />
 </DataTable>
-
-### Overview votes
-
-<BarChart 
-    data={voting_sqrt_ranked} 
-    x=proposal_id
-    y=num_votes
-    xAxisTitle=Proposal
-    yAxisTitle=Votes
-/>
-
-### Votes relation
-```sql stacked_voting
-SELECT
-  proposal_id,
-  num_votes AS value,
-  'number of votes' AS type
-FROM 
-  vote_results
-
-UNION ALL
-
-SELECT
-  proposal_id,
-  percent_voted AS value,
-  'percentage voted' AS type
-FROM 
-  vote_results
-```
-<BarChart 
-    data={stacked_voting} 
-    x=proposal_id
-    y=value
-    series=type 
-    xAxisTitle=Proposal
-    yAxisTitle=Votes
-/>
