@@ -4,7 +4,7 @@ version: 2
 sources:
   - name: proposal_portal     # the name we want to reference this source by
     meta:
-      external_location: "../{{ env_var('DATA_DIR') }}/new/{name}.json"
+      external_location: "../{{ env_var('DATA_DIR') }}/input/{name}.json"
     tables:
       - name: comment_votes
       - name: comments
@@ -19,7 +19,7 @@ sources:
   # TODO: is this the correct name?
   - name: voting_portal     # the name we want to reference this source by
     meta:
-      external_location: "../{{ env_var('DATA_DIR') }}/new/{name}.csv"
+      external_location: "../{{ env_var('DATA_DIR') }}/input/{name}.csv"
     tables:
       - name: agix_balance_snapshot
       - name: voting_answers

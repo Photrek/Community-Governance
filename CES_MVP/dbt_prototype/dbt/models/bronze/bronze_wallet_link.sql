@@ -1,1 +1,0 @@
-SELECT * FROM read_csv({{ source('wallet_linking_tool', 'wallet-links')}})

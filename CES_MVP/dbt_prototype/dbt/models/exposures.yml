@@ -2,19 +2,16 @@ version: 2
 
 exposures:
 
-  - name: ces_dashboard
-    label: Sample Dashboard of CES Data
+  - name: deep_funding_round_4
+    label: Dashboard showing the deep funding round 4 results
     type: dashboard
     maturity: low
     url: http://localhost:3000/
     description: >
-      Example dashboard demonstrating the flow of the data into a visual representation
+      Dashboard showing the deep funding round 4 results
 
     depends_on:
-      - ref('gold_vote_results')
-      - ref('silver_proposal')
-      - ref('silver_rating')
-      - ref('silver_user')
+      - ref('dfr4_voting_results')
     
     owner: 
       name: Roman Preuß

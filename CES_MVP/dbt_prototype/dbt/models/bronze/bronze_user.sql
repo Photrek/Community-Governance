@@ -1,1 +1,0 @@
-SELECT * FROM read_csv({{ source('deep_funding', 'users')}})
