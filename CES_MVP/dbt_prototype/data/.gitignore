@@ -1,2 +1,4 @@
 *.csv
 *.duckdb
+input/*.csv
+input/*.json
