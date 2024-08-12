@@ -1,0 +1,1 @@
+select * from dfr4_voting_results
