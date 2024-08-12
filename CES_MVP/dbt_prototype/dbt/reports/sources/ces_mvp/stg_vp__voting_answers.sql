@@ -1,0 +1,1 @@
+select * from stg_vp__voting_answers

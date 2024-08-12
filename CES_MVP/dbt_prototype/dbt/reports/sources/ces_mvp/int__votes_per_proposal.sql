@@ -1,0 +1,1 @@
+select * from int__votes_per_proposal

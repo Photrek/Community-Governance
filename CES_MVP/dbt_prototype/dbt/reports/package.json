@@ -26,7 +26,8 @@
     "@evidence-dev/postgres": "^1.0.4",
     "@evidence-dev/snowflake": "^1.0.3",
     "@evidence-dev/sqlite": "^2.0.3",
-    "@evidence-dev/trino": "^1.0.4"
+    "@evidence-dev/trino": "^1.0.4",
+    "svelte-katex": "^0.1.2"
   },
   "overrides": {
     "jsonwebtoken": "9.0.0",

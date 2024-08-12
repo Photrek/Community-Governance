@@ -1,0 +1,1 @@
+select * from int__min_max_engagement_score_per_proposal

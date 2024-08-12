@@ -1,0 +1,1 @@
+select * from int__reputation_weight
