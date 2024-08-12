@@ -54,3 +54,7 @@ If you see `✗ orders_by_month Missing database credentials`, you need to add t
 - [Github](https://github.com/evidence-dev/evidence)
 - [Slack Community](https://slack.evidence.dev/)
 - [Evidence Home Page](https://www.evidence.dev)
+
+## Trouble Shooting
+
+* `Window is not defined` - make sure you use the correct node version (see [../../.nvmrc](../../.nvmrc) by running `nvm use`) to run evidence.
