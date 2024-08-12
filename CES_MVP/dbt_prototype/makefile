@@ -5,7 +5,7 @@ export
 DBT_COMMAND_PREFIX := cd $(DBT_FOLDER) && pipenv run dbt
 
 # phony targets
-.PHONY: run debug compile clean db help setup docs reports
+.PHONY: run debug compile clean db help setup docs reports extract
 
 # targets
 debug compile run build:
@@ -37,9 +37,14 @@ db:
 	@echo "Spawning DuckDB"
 	duckdb $(DATA_DIR)/$(DBT_TARGET).duckdb
 
+extract:
+	@echo "Extracting data from API"
+	pipenv run python ./extract/deep_funding_api.py
+
 # help message
 help:
 	@echo "Available tasks:"
+	@echo "  extract	- Extract data from API"
 	@echo "  db	        - Start dbt output duckdb"
 	@echo "  debug		- Run dbt debug"
 	@echo "  docs		- Build and serve dbt docs"
