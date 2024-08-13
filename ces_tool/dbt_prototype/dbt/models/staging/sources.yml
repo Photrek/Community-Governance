@@ -3,10 +3,25 @@ version: 2
 
 sources:
   - name: proposal_portal     # the name we want to reference this source by
+    description: "Sources of the proposal portal api https://deepfunding.ai/wp-json/deepfunding/v1. A description of the api can be found [here](https://github.com/Photrek/Community-Governance/blob/meltano_dbt_evidence_prototype/ces_tool/docs/proposal_portal_api_spec_proposal.yml)"
     meta:
       external_location: "../{{ env_var('DATA_DIR') }}/input/{name}.json"
     tables:
       - name: comment_votes
+        description: >
+          User votes on a comment.
+        columns:
+          - name: comment_id
+            type: int64
+            description: Unique id of the comment
+            tests:
+              - not_null
+          - name: voter_id
+            type: int64
+            description: Id of the voter
+          - name: vote_type
+            type: varchar
+            description: Indicating if it is an `upvote` or `downvote`
       - name: comments
       - name: milestones
       - name: pools
