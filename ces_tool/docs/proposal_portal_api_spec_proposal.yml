@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Voting Portal API
+  title: Proposal Portal API
   description: API for retrieving funding rounds, pools, and proposals.
   version: 1.0.2
 servers:
