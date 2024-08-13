@@ -1,6 +1,8 @@
 # DBT & Evidence prototype
 
-# Setup
+More details about the CES tool can be found in the [dbt README](./dbt/README.md).
+
+# Getting started
 * Install DuckDB `brew install duckdb`
 * Install pipenv `brew install pipenv`
 * Install nvm `brew install nvm`
