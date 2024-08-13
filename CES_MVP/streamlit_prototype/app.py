@@ -145,11 +145,11 @@ if utils.tables_exists([
         models.load(con, 'models/intermediate/int_proposal_mapping.sql')
         models.load(con, 'models/intermediate/int_ratings.sql')
 
-        models.load(con, 'models/marts/proposals.sql')
         if fake_user_collection_ids:
             models.load(con, 'models/marts/users_fake.sql', model_name='users')
         else:
             models.load(con, 'models/marts/users.sql')
+        models.load(con, 'models/marts/proposals.sql')
 
         ## int_engagement_score
         models.load(con, 'models/dfr4/intermediate/int_comment_counts.sql')
