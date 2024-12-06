@@ -3,6 +3,7 @@
 More details about the CES tool can be found in the [dbt README](./dbt/README.md).
 
 # Getting started
+* Copy the `.env.example` file to `.env` and fill in the required values
 * Install DuckDB `brew install duckdb`
 * Install pipenv `brew install pipenv`
 * Install nvm `brew install nvm`
