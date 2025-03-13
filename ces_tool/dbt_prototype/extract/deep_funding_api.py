@@ -2,6 +2,8 @@
 Download voting portal data to the local database
 """
 
+# TODO: add way to download only new data
+
 import os
 import json
 import requests
@@ -10,7 +12,10 @@ from typing import Callable
 
 url = os.getenv('VOTING_PORTAL_HOST')
 
-# TODO: add way to download only new data
+API_HEADERS = {
+    'authententicaion-key': 'add key here',
+    'Content-Type': 'application/json'
+}
 
 def load_proposals(rounds):
     print("Downloading proposals")
@@ -26,7 +31,7 @@ def load_proposals(rounds):
 
 
 def __download_proposals(round_id):
-    response = requests.get(f"{url}/rounds/{round_id}/proposals")
+    response = requests.get(f"{url}/rounds/{round_id}/proposals", headers=API_HEADERS)
     raw_data = response.json()
 
     proposals = []
@@ -70,7 +75,7 @@ def load_rounds_and_pools_connection():
 
 
 def __fetch_rounds_pools():
-    response = requests.get(f"{url}/rounds")
+    response = requests.get(f"{url}/rounds", headers=API_HEADERS)
     raw_data = response.json()
     
     rounds = []
@@ -95,7 +100,7 @@ def __fetch_rounds_pools():
 def load_pools():
     print("Downloading pools")
     # download the voting portal data
-    response = requests.get(f"{url}/pools")
+    response = requests.get(f"{url}/pools", headers=API_HEADERS)
     raw_data = response.json()  # Convert response to JSON format
 
     __save_to_json(raw_data, 'data/input/pools.json')
@@ -105,7 +110,7 @@ def fetch_pages(endpoint_path: str, selector: str):
     page = 1
 
     while True:
-        response = requests.get(f"{url}/{endpoint_path}", params={'page': page, 'limit': 500})
+        response = requests.get(f"{url}/{endpoint_path}", params={'page': page, 'limit': 500}, headers=API_HEADERS)
         data = response.json()
 
         total_pages = data['pagination']['total_pages']
